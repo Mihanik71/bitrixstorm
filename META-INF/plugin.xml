@@ -1,4 +1,4 @@
-<idea-plugin version="2" url="https://github.org/salerman/phpstorm-bitrix-plugin/">
+<idea-plugin version="2" url="https://github.com/salerman/bitrixstorm/">
   <id>ru.salerman.bitrixstorm</id>
   <name>BitrixStorm</name>
   <version>0.2.0</version>
