@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>ru.salerman.bitrixstorm</id>
   <name>BitrixStorm</name>
-  <version>0.1.5</version>
+  <version>0.1.6</version>
   <vendor email="support@salerman.ru" url="http://www.salerman.ru">Salerman</vendor>
 
   <description><![CDATA[
@@ -9,6 +9,8 @@
       ]]></description>
 
   <change-notes><![CDATA[
+      0.1.6<br>
+      <small>Click on file path in $APPLICATION->IncludeFile("include_areas/copyright.php") now open that file</small>
       0.1.5<br>
       <small>Now you can mark directory as current bitrix site template from context menu "Mark Directory As"</small>
       0.1.4<br>
@@ -33,7 +35,6 @@
   </project-components>
 
   <actions>
-    <!-- Add your actions here -->
 	  <action id="markDirAsBitrixSiteTpl" class="ru.salerman.bitrixstorm.config.MarkDirectoryAsBitrixSiteTemplate"
 	          text="Bitrix Site Template" description="Mark this directory as current bitrix site template">
 		  <add-to-group group-id="MarkRootGroup" anchor="first"/>
@@ -48,5 +49,7 @@
 			  implementation="ru.salerman.bitrixstorm.templates.footer.GoToSiteTemplateFooterReferenceContributor"/>
 	  <psi.referenceContributor
 			  implementation="ru.salerman.bitrixstorm.components.GoToTemplateOfComponentReferenceContributor"/>
+	  <psi.referenceContributor
+			  implementation="ru.salerman.bitrixstorm.includes.GoToIncludeFileReferenceContributor"/>
   </extensions>
 </idea-plugin>
