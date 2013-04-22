@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NonNls;
@@ -40,6 +41,18 @@ public class BitrixUtils {
         return siteTemplateName;
     }
 
+    public static void setSiteTemplateName(String templateName) {
+        ProjectManager instance = ProjectManager.getInstance();
+        Project[] openProjects = instance.getOpenProjects();
+
+        Project project = openProjects[0];
+
+        BitrixSettings = PropertiesComponent.getInstance(project);
+
+        BitrixSettings.setValue(BITRIX_SITE_TEMPLATE, templateName);
+
+    }
+
     public static String recognizeComponentTemplate() {
         return currentTemplate;
     }
@@ -72,6 +85,28 @@ public class BitrixUtils {
             }
         }
 
+        return null;
+    }
+
+    public static Boolean isSiteTemplate (PsiElement path) {
+        String pathToTpl = path.toString();
+        if (pathToTpl.contains("/bitrix/templates/")) {
+            String[] split = pathToTpl.split("/bitrix/templates/");
+            if (!split[1].contains("/")) {
+                 return true;
+            }
+        }
+        return false;
+    }
+
+    public static String getSiteTemplate (PsiElement path) {
+        String pathToTpl = path.toString();
+        if (pathToTpl.contains("/bitrix/templates/")) {
+            String[] split = pathToTpl.split("/bitrix/templates/");
+            if (!split[1].contains("/")) {
+                return split[1];
+            }
+        }
         return null;
     }
 

@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>ru.salerman.bitrixstorm</id>
   <name>BitrixStorm</name>
-  <version>0.1.4</version>
+  <version>0.1.5</version>
   <vendor email="support@salerman.ru" url="http://www.salerman.ru">Salerman</vendor>
 
   <description><![CDATA[
@@ -9,6 +9,8 @@
       ]]></description>
 
   <change-notes><![CDATA[
+      0.1.5<br>
+      <small>Now you can mark directory as current bitrix site template from context menu "Mark Directory As"</small>
       0.1.4<br>
       <small>The transition to the template.php of simple components (complex components not cupported yet) when you click on it's name (line news.list or some)</small><br>
       0.1.3<br>
@@ -32,6 +34,10 @@
 
   <actions>
     <!-- Add your actions here -->
+	  <action id="markDirAsBitrixSiteTpl" class="ru.salerman.bitrixstorm.config.MarkDirectoryAsBitrixSiteTemplate"
+	          text="Bitrix Site Template" description="Mark this directory as current bitrix site template">
+		  <add-to-group group-id="MarkRootGroup" anchor="first"/>
+	  </action>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
