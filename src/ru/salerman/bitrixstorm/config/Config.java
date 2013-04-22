@@ -1,3 +1,25 @@
+/*
+ * Copyright 2011-2013 Salerman <www.salerman.ru>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @author Mikhail Medvedev aka r3c130n <mm@salerman.ru>
+ * @link http://www.salerman.ru/
+ * @date: 23.04.2013
+ */
+
 package ru.salerman.bitrixstorm.config;
 
 import com.intellij.ide.util.PropertiesComponent;
@@ -8,22 +30,19 @@ import com.intellij.openapi.project.ProjectManager;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
+import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
 
 import javax.swing.*;
 
-/**
- * Created with IntelliJ IDEA.
- * User: r3c130n
- * Date: 16.04.13
- * Time: 19:14
- * To change this template use File | Settings | File Templates.
- */
 public class Config implements Configurable {
 
+    private static String curSiteTemplateFromSettings = ".default";
+    private static String curSiteTemplateValue = ".default";
     private JComponent myComponent;
-    private JTextField siteTemplateName;
+    private JComboBox siteTemplateName;
     private JPanel myPanel;
     private PropertiesComponent BitrixSettings;
+    private String[] tpls;
 
     @NonNls
     private static final String BITRIX_SITE_TEMPLATE = "BitrixStorm.Site.Template";
@@ -32,28 +51,32 @@ public class Config implements Configurable {
     @Nls
     @Override
     public String getDisplayName() {
-        return "BitrixStorm Settings";
+        return "BitrixStorm";
     }
 
     @Nullable
     @Override
     public String getHelpTopic() {
-        return "preferences.lookFeel";
+        return null;
     }
 
     @Nullable
     @Override
     public JComponent createComponent() {
-        ProjectManager instance = ProjectManager.getInstance();
-        Project[] openProjects = instance.getOpenProjects();
+        project = BitrixUtils.getProject();
 
-        project = openProjects[0];
+        tpls = BitrixUtils.findComponentTemplatesList();
 
         BitrixSettings = PropertiesComponent.getInstance(project);
 
-        String curSiteTemplateFromSettings = BitrixSettings.getValue(BITRIX_SITE_TEMPLATE, ".default");
+        curSiteTemplateFromSettings = BitrixSettings.getValue(BITRIX_SITE_TEMPLATE, ".default");
 
-        siteTemplateName.setText(curSiteTemplateFromSettings);
+        for (int i=0; i<tpls.length; i++) {
+            siteTemplateName.addItem(tpls[i]);
+            if (tpls[i] == curSiteTemplateFromSettings) {
+                siteTemplateName.setSelectedIndex(i);
+            }
+        }
 
         myComponent = (JComponent) myPanel;
         return myComponent;
@@ -61,8 +84,9 @@ public class Config implements Configurable {
 
     @Override
     public boolean isModified() {
-        String curSiteTemplateFromSettings = BitrixSettings.getValue(BITRIX_SITE_TEMPLATE, ".default");
-        if (siteTemplateName.getText() == curSiteTemplateFromSettings) {
+        curSiteTemplateFromSettings = BitrixSettings.getValue(BITRIX_SITE_TEMPLATE, ".default");
+        curSiteTemplateValue = (String) siteTemplateName.getSelectedItem();
+        if (curSiteTemplateValue.contentEquals(curSiteTemplateFromSettings)) {
             return false;
         }
         return true;
@@ -70,15 +94,23 @@ public class Config implements Configurable {
 
     @Override
     public void apply() throws ConfigurationException {
-
-        String updatedSiteTemplate = siteTemplateName.getText();
-        BitrixSettings.setValue(BITRIX_SITE_TEMPLATE, updatedSiteTemplate);
-
+        curSiteTemplateFromSettings = BitrixSettings.getValue(BITRIX_SITE_TEMPLATE, ".default");
+        curSiteTemplateValue = (String) siteTemplateName.getSelectedItem();
+        if (curSiteTemplateValue != curSiteTemplateFromSettings) {
+            BitrixSettings.setValue(BITRIX_SITE_TEMPLATE, curSiteTemplateValue);
+        }
     }
 
     @Override
     public void reset() {
-        BitrixSettings.setValue(BITRIX_SITE_TEMPLATE, ".default");
+        curSiteTemplateFromSettings = BitrixSettings.getValue(BITRIX_SITE_TEMPLATE, ".default");
+        curSiteTemplateValue = (String) siteTemplateName.getSelectedItem();
+
+        for (int i=0; i<tpls.length; i++) {
+            if (tpls[i].contentEquals(curSiteTemplateFromSettings)) {
+                siteTemplateName.setSelectedIndex(i);
+            }
+        }
     }
 
     @Override
