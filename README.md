@@ -2,10 +2,10 @@
 
 BitrixStorm is a perfect toolkit for faster and easier web development on <a href="www.1c-bitrix.ru">1C-Bitrix</a> PHP CMF by using best PHP IDE - JetBrains PhpStorm, created by [Mikhail Medvedev](http://twitter.com/r3c130n).
 
-<img src="img/1.png" width="250px"><br>
-<img src="img/2.png" width="250px"><br>
-<img src="img/3.png" width="250px"><br>
-<img src="img/4.png" width="250px">
+<img src="http://plugins.jetbrains.com/files/7228/screenshot_14181.png" width="250px"><br>
+<img src="http://plugins.jetbrains.com/files/7228/screenshot_14184.png" width="250px"><br>
+<img src="http://plugins.jetbrains.com/files/7228/screenshot_14183.png" width="250px"><br>
+<img src="http://plugins.jetbrains.com/files/7228/screenshot_14182.png" width="250px">
 
 
 ## Changelog
