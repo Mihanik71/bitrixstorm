@@ -2,8 +2,17 @@
 
 BitrixStorm is a perfect toolkit for faster and easier web development on <a href="www.1c-bitrix.ru">1C-Bitrix</a> PHP CMF by using best PHP IDE - JetBrains PhpStorm, created by [Mikhail Medvedev](http://twitter.com/r3c130n).
 
+<img src="img/1.png" width="250px"><br>
+<img src="img/2.png" width="250px"><br>
+<img src="img/3.png" width="250px"><br>
+<img src="img/4.png" width="250px">
+
 
 ## Changelog
+
+####0.2.1####
+
+* Bigfix: Can't choise site template on Windows (issue #1)
 
 ####0.2.0####
 
