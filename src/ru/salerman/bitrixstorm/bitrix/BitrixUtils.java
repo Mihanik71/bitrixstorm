@@ -46,17 +46,18 @@ public class BitrixUtils {
     public static PropertiesComponent BitrixSettings;
     @NonNls
     private static final String BITRIX_SITE_TEMPLATE = "BitrixStorm.Site.Template";
-
-    private static String bitrixTemplatesPath;
+    private static final String bitrixTemplatesPath = separator + "bitrix" + separator + "templates" + separator;
+    private static String bitrixTemplatesPathEsc;
 
     private static final String getSeparator() {
         // need for compatibility with M$ Windows
         String sep = separator;
 
-        if (sep != "/") {
+        if (!sep.contentEquals("/")) {
             sep = "\\\\";
         }
-        bitrixTemplatesPath = sep + "bitrix" + sep + "templates" + sep;
+
+        bitrixTemplatesPathEsc = sep + "bitrix" + sep + "templates" + sep;
         return sep;
     }
 
@@ -129,7 +130,7 @@ public class BitrixUtils {
         String sep = getSeparator();
         String pathToTpl = path.toString();
         if (pathToTpl.contains(bitrixTemplatesPath)) {
-            String[] split = pathToTpl.split(bitrixTemplatesPath);
+            String[] split = pathToTpl.split(bitrixTemplatesPathEsc);
             if (!split[1].contains(sep)) {
                 return true;
             }
@@ -141,7 +142,7 @@ public class BitrixUtils {
         String sep = getSeparator();
         String pathToTpl = path.toString();
         if (pathToTpl.contains(bitrixTemplatesPath)) {
-            String[] split = pathToTpl.split(bitrixTemplatesPath);
+            String[] split = pathToTpl.split(bitrixTemplatesPathEsc);
             if (!split[1].contains(sep)) {
                 return split[1];
             }
