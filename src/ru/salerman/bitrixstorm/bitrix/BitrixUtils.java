@@ -50,16 +50,16 @@ public class BitrixUtils {
     @NonNls
     private static final String BITRIX_SITE_TEMPLATE = "BitrixStorm.Site.Template";
 
-    private static final String bitrixTemplatesPath = separator + "bitrix" + separator + "templates" + separator;
+    private static String bitrixTemplatesPath;
 
     private static final String getSeparator() {
         // need for compatibility with M$ Windows
         String sep = separator;
 
         if (sep == "\\") {
-             sep = "\\\\";
+            sep = "\\\\";
         }
-
+        bitrixTemplatesPath = sep + "bitrix" + sep + "templates" + sep;
         return sep;
     }
 
@@ -95,19 +95,22 @@ public class BitrixUtils {
     }
 
     public static PsiFile getIncludeFile(String path, Project project) {
-        if (path.substring(0, 1) != separator) {
-        path = bitrixTemplatesPath + getSiteTemplateName() + separator + path;
+        String sep = getSeparator();
+        if (path.substring(0, 1) != sep) {
+            path = bitrixTemplatesPath + getSiteTemplateName() + sep + path;
         }
         return getPsiFileByPath(project, project.getBasePath() + path);
     }
 
     public static PsiFile getSiteTemplateHeader(Project project) {
-        String path = project.getBasePath() + bitrixTemplatesPath + getSiteTemplateName() + separator + "header.php";
+        String sep = getSeparator();
+        String path = project.getBasePath() + bitrixTemplatesPath + getSiteTemplateName() + sep + "header.php";
         return getPsiFileByPath(project, path);
     }
 
     public static PsiFile getSiteTemplateFooter(Project project) {
-        String path = project.getBasePath() + bitrixTemplatesPath + getSiteTemplateName() + separator + "footer.php";
+        String sep = getSeparator();
+        String path = project.getBasePath() + bitrixTemplatesPath + getSiteTemplateName() + sep + "footer.php";
         return getPsiFileByPath(project, path);
     }
 
@@ -126,21 +129,23 @@ public class BitrixUtils {
     }
 
     public static Boolean isSiteTemplate (PsiElement path) {
+        String sep = getSeparator();
         String pathToTpl = path.toString();
         if (pathToTpl.contains(bitrixTemplatesPath)) {
             String[] split = pathToTpl.split(bitrixTemplatesPath);
-            if (!split[1].contains(separator)) {
-                 return true;
+            if (!split[1].contains(sep)) {
+                return true;
             }
         }
         return false;
     }
 
     public static String getSiteTemplate (PsiElement path) {
+        String sep = getSeparator();
         String pathToTpl = path.toString();
         if (pathToTpl.contains(bitrixTemplatesPath)) {
             String[] split = pathToTpl.split(bitrixTemplatesPath);
-            if (!split[1].contains(separator)) {
+            if (!split[1].contains(sep)) {
                 return split[1];
             }
         }
@@ -148,6 +153,7 @@ public class BitrixUtils {
     }
 
     private static String[] getComponentTemplatesPathOrder(String componentNameSpace, String componentName, String templateName, Project project) {
+        String sep = getSeparator();
         String[] order = new String[3];
 
         if (templateName == "") {
@@ -156,29 +162,29 @@ public class BitrixUtils {
 
         // TODO: add complex component support
         order[0]    = project.getBasePath()
-                    + bitrixTemplatesPath + getSiteTemplateName()
-                    + separator + "components"
-                    + separator + componentNameSpace
-                    + separator + componentName
-                    + separator + templateName
-                    + separator + "template.php";
+                + bitrixTemplatesPath + getSiteTemplateName()
+                + sep + "components"
+                + sep + componentNameSpace
+                + sep + componentName
+                + sep + templateName
+                + sep + "template.php";
 
         order[1]    = project.getBasePath()
-                    + bitrixTemplatesPath + ".default"
-                    + separator + "components"
-                    + separator + componentNameSpace
-                    + separator + componentName
-                    + separator + templateName
-                    + separator + "template.php";
+                + bitrixTemplatesPath + ".default"
+                + sep + "components"
+                + sep + componentNameSpace
+                + sep + componentName
+                + sep + templateName
+                + sep + "template.php";
 
         order[2]    = project.getBasePath()
-                    + separator + "bitrix"
-                    + separator + "components"
-                    + separator + componentNameSpace
-                    + separator + componentName
-                    + separator + "templates"
-                    + separator + templateName
-                    + separator + "template.php";
+                + sep + "bitrix"
+                + sep + "components"
+                + sep + componentNameSpace
+                + sep + componentName
+                + sep + "templates"
+                + sep + templateName
+                + sep + "template.php";
 
         return order;
     }
@@ -196,9 +202,9 @@ public class BitrixUtils {
     }
 
     public static String getTplByPsiElement(PsiElement directory) {
-        String mySeparator = getSeparator();
+        String sep = getSeparator();
         String raw = directory.toString();
-        String[] fullPath = raw.split(mySeparator);
+        String[] fullPath = raw.split(sep);
         return fullPath[fullPath.length-1];
     }
 
