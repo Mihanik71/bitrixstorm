@@ -52,6 +52,17 @@ public class BitrixUtils {
 
     private static final String bitrixTemplatesPath = separator + "bitrix" + separator + "templates" + separator;
 
+    private static final String getSeparator() {
+        // need for compatibility with M$ Windows
+        String sep = separator;
+
+        if (sep == "\\") {
+             sep = "\\\\";
+        }
+
+        return sep;
+    }
+
     public static String getSiteTemplateName() {
 
         Project project = getProject();
@@ -185,8 +196,9 @@ public class BitrixUtils {
     }
 
     public static String getTplByPsiElement(PsiElement directory) {
+        String mySeparator = getSeparator();
         String raw = directory.toString();
-        String[] fullPath = raw.split(separator);
+        String[] fullPath = raw.split(mySeparator);
         return fullPath[fullPath.length-1];
     }
 
