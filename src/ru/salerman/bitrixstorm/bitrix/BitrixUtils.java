@@ -22,10 +22,7 @@
 
 package ru.salerman.bitrixstorm.bitrix;
 
-import com.intellij.ide.DataManager;
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -56,7 +53,7 @@ public class BitrixUtils {
         // need for compatibility with M$ Windows
         String sep = separator;
 
-        if (sep == "\\") {
+        if (sep != "/") {
             sep = "\\\\";
         }
         bitrixTemplatesPath = sep + "bitrix" + sep + "templates" + sep;
