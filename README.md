@@ -44,7 +44,8 @@ Have a bug or a feature request? [Please open a new issue](https://github.com/sa
 
 ## Contributing
 
-Please submit all pull requests
+* Please submit all pull requests
+* [http://salerman.userecho.com/list/19814-bitrixstorm-jetbrains-phpstorm-plugin/?category=0](Vote for good ideas and submit yours)
 
 
 ## Authors
