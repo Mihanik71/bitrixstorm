@@ -209,16 +209,21 @@ public class BitrixUtils {
     public static String[] findComponentTemplatesList() {
         Project project = getProject();
 
-        VirtualFile baseDir = project.getBaseDir().findChild("bitrix").findChild("templates");
-        PsiDirectory directory = PsiManager.getInstance(project).findDirectory(baseDir);
-        PsiElement[] children = directory.getChildren();
+        try {
+            VirtualFile baseDir = project.getBaseDir().findChild("bitrix").findChild("templates");
+            PsiDirectory directory = PsiManager.getInstance(project).findDirectory(baseDir);
+            PsiElement[] children = directory.getChildren();
 
-        String[] templates = new String[children.length];
+            String[] templates = new String[children.length];
 
-        for (int i = 0; i < children.length; i++) {
-            templates[i] = getTplByPsiElement(children[i]);
+            for (int i = 0; i < children.length; i++) {
+                templates[i] = getTplByPsiElement(children[i]);
+            }
+
+            return templates;
+        } catch (NullPointerException ex) {
+
         }
-
-        return templates;
+        return null;
     }
 }

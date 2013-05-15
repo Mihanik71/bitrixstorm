@@ -64,7 +64,7 @@
 
   <actions>
 	  <action id="markDirAsBitrixSiteTpl" class="ru.salerman.bitrixstorm.config.MarkDirectoryAsBitrixSiteTemplate"
-	          text="Bitrix Site Template" description="Mark this directory as current bitrix site template">
+	          text="Bitrix Site Template" icon="/ru/salerman/bitrixstorm/resources/icons/bitrix.png" description="Mark this directory as current bitrix site template">
 		  <add-to-group group-id="MarkRootGroup" anchor="first"/>
 	  </action>
   </actions>
