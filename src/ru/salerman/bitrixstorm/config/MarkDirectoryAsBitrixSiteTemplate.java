@@ -50,8 +50,10 @@ public class MarkDirectoryAsBitrixSiteTemplate extends AnAction {
         Boolean isSiteTemplate = BitrixUtils.isSiteTemplate(path);
 
         if (!isSiteTemplate) {
+            e.getPresentation().setVisible(false);
             e.getPresentation().setEnabled(false);
         } else {
+            e.getPresentation().setVisible(true);
             e.getPresentation().setEnabled(true);
         }
     }
