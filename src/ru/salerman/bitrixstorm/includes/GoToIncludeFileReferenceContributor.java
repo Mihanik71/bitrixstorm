@@ -32,8 +32,8 @@ import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 public class GoToIncludeFileReferenceContributor extends PsiReferenceContributor {
     @Override
     public void registerReferenceProviders(PsiReferenceRegistrar psiReferenceRegistrar) {
-        //$APPLICATION->GetTemplatePath("include_areas/company_name.php"),
-        final String regexp = "(?:\\n*\\s*.*)\"([\\w/_]*.php)\"(?:\\n*\\s*.*)";  //GetTemplatePath(?:\n*\s*.*)\(     \)
+        //"include_areas/company_name.php"
+        final String regexp = "\"(#SITE_DIR#)?[\\w/_-]*(.php|/)\"";
 
         PsiElementPattern.Capture<StringLiteralExpression> psiElementCapture = PlatformPatterns.psiElement(
         StringLiteralExpression.class).withText(StandardPatterns.string().matches(regexp));
