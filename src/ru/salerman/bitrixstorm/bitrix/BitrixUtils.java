@@ -94,7 +94,16 @@ public class BitrixUtils {
 
     public static PsiFile getIncludeFile(String path, Project project) {
         String sep = getSeparator();
-        if (path.substring(0, 1) != sep) {
+
+        if (path.endsWith("/")) {
+            path += "index.php";
+        }
+
+        if (path.startsWith("#SITE_DIR#")) {
+            path = path.replace("#SITE_DIR#", sep);
+        }
+
+        if (!path.startsWith(sep)) {
             path = bitrixTemplatesPath + getSiteTemplateName() + sep + path;
         }
         return getPsiFileByPath(project, project.getBasePath() + path);

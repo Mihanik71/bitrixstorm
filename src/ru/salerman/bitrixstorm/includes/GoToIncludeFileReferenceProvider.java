@@ -34,7 +34,6 @@ public class GoToIncludeFileReferenceProvider extends PsiReferenceProvider {
     @Override
     public PsiReference[] getReferencesByElement(@NotNull PsiElement psiElement, @NotNull ProcessingContext processingContext) {
         StringLiteralExpression se = (StringLiteralExpression) psiElement;
-        PsiElement parent = psiElement.getParent();
 
         GoToIncludeFileReference psiReference = new GoToIncludeFileReference(psiElement, psiElement.getProject());
 
