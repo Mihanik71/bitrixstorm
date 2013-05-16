@@ -103,7 +103,7 @@ public class BitrixUtils {
             path = path.replace("#SITE_DIR#", sep);
         }
 
-        if (!path.startsWith(sep)) {
+        if (!path.startsWith("/")) {
             path = bitrixTemplatesPath + getSiteTemplateName() + sep + path;
         }
         return getPsiFileByPath(project, project.getBasePath() + path);
