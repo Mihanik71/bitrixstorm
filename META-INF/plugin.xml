@@ -79,5 +79,7 @@
 			  implementation="ru.salerman.bitrixstorm.components.GoToTemplateOfComponentReferenceContributor"/>
 	  <psi.referenceContributor
 			  implementation="ru.salerman.bitrixstorm.includes.GoToIncludeFileReferenceContributor"/>
+	  <psi.referenceContributor
+			  implementation="ru.salerman.bitrixstorm.components.GoToComponentSrcReferenceContributor"/>
   </extensions>
 </idea-plugin>

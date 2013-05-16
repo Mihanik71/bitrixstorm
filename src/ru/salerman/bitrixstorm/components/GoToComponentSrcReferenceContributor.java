@@ -29,17 +29,17 @@ import com.intellij.psi.PsiReferenceContributor;
 import com.intellij.psi.PsiReferenceRegistrar;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 
-public class GoToTemplateOfComponentReferenceContributor extends PsiReferenceContributor {
+public class GoToComponentSrcReferenceContributor extends PsiReferenceContributor {
     @Override
     public void registerReferenceProviders(PsiReferenceRegistrar psiReferenceRegistrar) {
-        final String regexp = "\"[a-z\\.\\_]*\"";
+        final String regexp = "[\"][\\w]*:([\\w\\.]*[\"])";
 
         PsiElementPattern.Capture<StringLiteralExpression> psiElementCapture = PlatformPatterns.psiElement(
         StringLiteralExpression.class).withText(StandardPatterns.string().matches(regexp));
 
         psiReferenceRegistrar.registerReferenceProvider(
                 psiElementCapture,
-                new GoToTemplateOfComponentReferenceProvider(),
+                new GoToComponentSrcReferenceProvider(),
                 PsiReferenceRegistrar.DEFAULT_PRIORITY);
     }
 }

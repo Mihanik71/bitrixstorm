@@ -226,4 +226,36 @@ public class BitrixUtils {
         }
         return null;
     }
+
+    public static PsiElement findComponentSrc(String nameSpace, String component, Project project) {
+        PsiFile cmp;
+        String[] order = getComponentSrcPath(nameSpace, component, project);
+
+        for (String path : order) {
+            cmp = getPsiFileByPath(project, path);
+            if (cmp != null) {
+                return cmp;
+            }
+        }
+
+        return null;
+    }
+
+    private static String[] getComponentSrcPath(String componentNameSpace, String componentName, Project project) {
+        String[] order = new String[2];
+        String sep = getSeparator();
+        order[0]    = project.getBasePath()
+                + sep + "bitrix"
+                + sep + "components"
+                + sep + componentNameSpace
+                + sep + componentName
+                + sep + "component.php";
+        order[1]    = project.getBasePath()
+                + sep + "bitrix"
+                + sep + "components"
+                + sep + componentNameSpace
+                + sep + componentName
+                + sep + "class.php";
+        return order;
+    }
 }

@@ -29,16 +29,16 @@ import com.intellij.util.ProcessingContext;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.jetbrains.annotations.NotNull;
 
-public class GoToTemplateOfComponentReferenceProvider extends PsiReferenceProvider {
+public class GoToComponentSrcReferenceProvider extends PsiReferenceProvider {
     @NotNull
     @Override
     public PsiReference[] getReferencesByElement(@NotNull PsiElement psiElement, @NotNull ProcessingContext processingContext) {
         StringLiteralExpression se = (StringLiteralExpression) psiElement;
         PsiElement parent = psiElement.getParent();
 
-        GoToTemplateOfComponentReference psiReference = new GoToTemplateOfComponentReference(psiElement, psiElement.getProject());
+        GoToComponentSrcReference psiReference = new GoToComponentSrcReference(parent, psiElement.getProject());
 
-        if (psiReference.isBitrixTemplate != false && psiReference.resolve() != null) {
+        if (psiReference.resolve() != null) {
             return new PsiReference[]{psiReference};
         }
         return PsiReference.EMPTY_ARRAY;

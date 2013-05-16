@@ -28,34 +28,26 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
-import com.jetbrains.php.lang.psi.elements.ParameterList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
 
-public class GoToTemplateOfComponentReference implements PsiReference {
+public class GoToComponentSrcReference implements PsiReference {
 
-    public Boolean isBitrixTemplate = true;
-    private String templateString;
+    private String componentString;
     private Project project;
     private String cleanString;
     private PsiElement psiElement;
     private TextRange textRange;
     private String component;
     private String nameSpace;
-    private String templateName;
 
 
-    public GoToTemplateOfComponentReference(final PsiElement psiElement, Project project) {
+    public GoToComponentSrcReference(final PsiElement psiElement, Project project) {
         this.psiElement = psiElement;
-        PsiElement parent = psiElement.getParent();
-        if (parent.toString() != "Parameter list") {
-            this.isBitrixTemplate = false;
-            return;
-        }
-        this.templateString = parent.getText();
+        this.componentString = psiElement.getText();
         this.project = project;
-        String[] allStrings = this.templateString.toLowerCase().split("array");
+        String[] allStrings = this.componentString.toLowerCase().split("array");
         cleanString = allStrings[0].replace("\"", "").replace("'", "").replace("\n","").replace(" ","").replace("\t","");
         cleanString = cleanString.substring(0, cleanString.length() - 1);
 
@@ -63,28 +55,13 @@ public class GoToTemplateOfComponentReference implements PsiReference {
         final String[] pathElements = cleanString.split(":");
 
         this.nameSpace = pathElements[0];
-        if (cleanString.endsWith(",")) {
-            this.component = pathElements[1].substring(0, pathElements[1].length() -1);
-            this.templateName = "";
-        } else {
-            String[] cmptpl = pathElements[1].split(",");
-            this.component = cmptpl[0];
-            if (cmptpl.length == 2) {
-                this.templateName = cmptpl[1];
-            } else {
-                this.templateName = "";
-            }
-        }
-        int start, stop;
-        if (this.templateName == "") {
-            start = 0;
-            stop = start +2;
-        } else {
-            start = 1;
-            stop = this.templateName.length();
-        }
+        String[] cmptpl = pathElements[1].split(",");
+        this.component = cmptpl[0];
 
-        this.textRange = new TextRange(start, stop);
+        int start = this.componentString.indexOf(this.component);
+        int stop = start + this.component.length();
+
+        textRange = new TextRange(start, stop);
     }
 
     @Override
@@ -94,19 +71,19 @@ public class GoToTemplateOfComponentReference implements PsiReference {
 
     @Override
     public TextRange getRangeInElement() {
-        return this.textRange;
+        return textRange;
     }
 
     @Nullable
     @Override
     public PsiElement resolve() {
-        return BitrixUtils.findComponentTemplate(nameSpace, component, templateName, project);
+        return BitrixUtils.findComponentSrc(nameSpace, component, project);
     }
 
     @NotNull
     @Override
     public String getCanonicalText() {
-        return this.templateString;
+        return this.componentString;
     }
 
     @Override
@@ -132,6 +109,6 @@ public class GoToTemplateOfComponentReference implements PsiReference {
 
     @Override
     public boolean isSoft() {
-        return false;
+        return true;
     }
 }
