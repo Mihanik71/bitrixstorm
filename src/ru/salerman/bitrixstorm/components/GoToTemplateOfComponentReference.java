@@ -54,6 +54,12 @@ public class GoToTemplateOfComponentReference implements PsiReference {
             return;
         }
         this.templateString = parent.getText();
+
+        if (!this.templateString.contains(":")) {
+            this.isBitrixTemplate = false;
+            return;
+        }
+
         this.project = project;
         String[] allStrings = this.templateString.toLowerCase().split("array");
         cleanString = allStrings[0].replace("\"", "").replace("'", "").replace("\n","").replace(" ","").replace("\t","");
@@ -81,7 +87,7 @@ public class GoToTemplateOfComponentReference implements PsiReference {
             stop = start +2;
         } else {
             start = 1;
-            stop = this.templateName.length();
+            stop = this.templateName.length() + 1;
         }
 
         this.textRange = new TextRange(start, stop);
