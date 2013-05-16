@@ -49,12 +49,19 @@ public class GoToIncludeFileReference implements PsiReference {
 
     private TextRange textRange;
 
+    public Boolean isExcludedFile = false;
+
 
     public GoToIncludeFileReference(final PsiElement psiElement, Project project) {
         this.psiElement = psiElement;
         this.templateString = psiElement.getText();
         this.project = project;
         this.cleanString = psiElement.getText().replace("\"", "");
+
+        if (this.cleanString.contentEquals("/bitrix/header.php") || this.cleanString.contentEquals("/bitrix/footer.php")) {
+             this.isExcludedFile = true;
+             return;
+        }
 
         textRange = new TextRange(1, this.templateString.length() - 1);
     }

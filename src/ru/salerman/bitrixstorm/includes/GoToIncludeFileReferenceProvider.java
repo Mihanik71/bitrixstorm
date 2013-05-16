@@ -37,7 +37,7 @@ public class GoToIncludeFileReferenceProvider extends PsiReferenceProvider {
 
         GoToIncludeFileReference psiReference = new GoToIncludeFileReference(psiElement, psiElement.getProject());
 
-        if (psiReference.resolve() != null) {
+        if (!psiReference.isExcludedFile && psiReference.resolve() != null) {
             return new PsiReference[]{psiReference};
         }
         return PsiReference.EMPTY_ARRAY;
