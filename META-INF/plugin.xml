@@ -1,14 +1,41 @@
 <idea-plugin version="2" url="https://github.com/salerman/bitrixstorm/">
   <id>ru.salerman.bitrixstorm</id>
   <name>BitrixStorm</name>
-  <version>0.2.1</version>
+  <version>0.2.3</version>
   <vendor email="support@salerman.ru" url="http://www.salerman.ru">Salerman</vendor>
 
   <description><![CDATA[
-      BitrixStorm is a perfect toolkit for faster and easier web development on <a href="www.1c-bitrix.ru">1C-Bitrix</a> PHP CMF by using best PHP IDE - JetBrains PhpStorm
+      <h1>1C-Bitrix plugin.</h1>
+      <p>BitrixStorm is a perfect toolkit for faster and easier web development on <a href="www.1c-bitrix.ru">1C-Bitrix</a> PHP CMF by using best PHP IDE - JetBrains PhpStorm</p>
+
+      <h2>Features:</h2>
+	  <h3>Jump-To-Source for:</h3>
+	  <ul>
+        <li>Simple component templates</li>
+		<li>Component file</li>
+		<li>Site template`s header.php</li>
+		<li>Site template`s footer.php</li>
+		<li>Includes</li>
+		<li>Any .php files from path-to-file strings</li>
       ]]></description>
 
   <change-notes><![CDATA[
+      <p>
+        0.2.3
+        <ul>
+            <li>Feature: Jump to .php files from strings like a file path</li>
+            <li>Bigfix: Fix an exception when click not at template</li>
+        </ul>
+      </p>
+      <p>
+        0.2.2
+        <ul>
+            <li>Feature: Jump to source for simple components and theirs templates</li>
+            <li>Now hides from context menu Mark Directory As</li>
+            <li>Add bitrix icon</li>
+            <li>Bigfix: Fix NullPointerException on build context menu and add bitrix icon</li>
+        </ul>
+      </p>
       <p>
         0.2.1
         <ul>
@@ -18,32 +45,32 @@
       <p>
         0.2.0
         <ul>
-            <li>Now you can choise bitrix site template from list at project settings</li>
+            <li>Feature: Now you can choise bitrix site template from list at project settings</li>
         </ul>
       </p>
       <p>
         0.1.6
         <ul>
-            <li>Click on file path in $APPLICATION->IncludeFile("include_areas/copyright.php") now open that file</li>
+            <li>Feature: Click on file path in $APPLICATION->IncludeFile("include_areas/copyright.php") now open that file</li>
         </ul>
       </p>
       <p>
         0.1.5
         <ul>
-            <li>Now you can mark directory as current bitrix site template from context menu "Mark Directory As"</li>
+            <li>Feature: Now you can mark directory as current bitrix site template from context menu "Mark Directory As"</li>
         </ul>
       </p>
       <p>
         0.1.4
 	      <ul>
-	        <li>The transition to the template.php of simple components (complex components not cupported yet) when you click on it's name (line news.list or some)</li>
+	        <li>Feature: The transition to the template.php of simple components (complex components not cupported yet) when you click on it's name (line news.list or some)</li>
           </ul>
       </p>
       <p>
         0.1.3
         <ul>
-            <li>The transition to the header.php template site when you click on "/bitrix/header.php"</li>
-            <li>The transition to the footer.php template site when you click on "/bitrix/footer.php"</li>
+            <li>Feature: The transition to the header.php template site when you click on "/bitrix/header.php"</li>
+            <li>Feature: The transition to the footer.php template site when you click on "/bitrix/footer.php"</li>
             <li>In the project settings taken out "Site template name" setting</li>
         </ul>
       </p>

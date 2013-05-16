@@ -1,14 +1,38 @@
-# [BitrixStorm v0.2.1](http://salerman.github.io/phpstorm)
+# [BitrixStorm v0.2.3](http://salerman.github.io/phpstorm)
 
 BitrixStorm is a perfect toolkit for faster and easier web development on <a href="www.1c-bitrix.ru">1C-Bitrix</a> PHP CMF by using best PHP IDE - JetBrains PhpStorm, created by [Mikhail Medvedev](http://twitter.com/r3c130n).
+
+## Features
+
+###Jump-To-Source for:###
+
+* Simple component templates
+* Component file
+* Site template`s header.php
+* Site template`s footer.php
+* Includes
+* Any .php files from path-to-file strings
+
+## Screenshots
 
 <img src="http://plugins.jetbrains.com/files/7228/screenshot_14181.png" width="250px"><br>
 <img src="http://plugins.jetbrains.com/files/7228/screenshot_14184.png" width="250px"><br>
 <img src="http://plugins.jetbrains.com/files/7228/screenshot_14183.png" width="250px"><br>
 <img src="http://plugins.jetbrains.com/files/7228/screenshot_14182.png" width="250px">
 
-
 ## Changelog
+
+####0.2.3####
+
+* Feature: Jump to .php files from strings like a file path
+* Bigfix: Fix an exception when click not at template
+
+####0.2.2####
+
+* Feature: Jump to source for simple components and theirs templates
+* Now hides from context menu Mark Directory As
+* Add bitrix icon
+* Bigfix: Fix NullPointerException on build context menu and add bitrix icon
 
 ####0.2.1####
 
