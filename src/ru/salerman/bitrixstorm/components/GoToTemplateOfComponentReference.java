@@ -31,19 +31,17 @@ import com.intellij.util.IncorrectOperationException;
 import com.jetbrains.php.lang.psi.elements.ParameterList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.salerman.bitrixstorm.bitrix.BitrixComponent;
+import ru.salerman.bitrixstorm.bitrix.BitrixComponentTemplate;
 import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
 
 public class GoToTemplateOfComponentReference implements PsiReference {
 
     public Boolean isBitrixTemplate = true;
     private String templateString;
-    private Project project;
-    private String cleanString;
     private PsiElement psiElement;
     private TextRange textRange;
-    private String component;
-    private String nameSpace;
-    private String templateName;
+    private BitrixComponent component;
 
 
     public GoToTemplateOfComponentReference(final PsiElement psiElement, Project project) {
@@ -60,34 +58,15 @@ public class GoToTemplateOfComponentReference implements PsiReference {
             return;
         }
 
-        this.project = project;
-        String[] allStrings = this.templateString.toLowerCase().split("array");
-        cleanString = allStrings[0].replace("\"", "").replace("'", "").replace("\n","").replace(" ","").replace("\t","");
-        cleanString = cleanString.substring(0, cleanString.length() - 1);
+        this.component = BitrixComponent.initComponentFromString(templateString);
 
-
-        final String[] pathElements = cleanString.split(":");
-
-        this.nameSpace = pathElements[0];
-        if (cleanString.endsWith(",")) {
-            this.component = pathElements[1].substring(0, pathElements[1].length() -1);
-            this.templateName = "";
-        } else {
-            String[] cmptpl = pathElements[1].split(",");
-            this.component = cmptpl[0];
-            if (cmptpl.length == 2) {
-                this.templateName = cmptpl[1];
-            } else {
-                this.templateName = "";
-            }
-        }
         int start, stop;
-        if (this.templateName == "") {
+        if (this.component.getTemplateName() == "") {
             start = 0;
             stop = start +2;
         } else {
             start = 1;
-            stop = this.templateName.length() + 1;
+            stop = this.component.getTemplateName().length() + 1;
         }
 
         this.textRange = new TextRange(start, stop);
@@ -106,7 +85,7 @@ public class GoToTemplateOfComponentReference implements PsiReference {
     @Nullable
     @Override
     public PsiElement resolve() {
-        return BitrixUtils.findComponentTemplate(nameSpace, component, templateName, project);
+        return component.getTemplate().toPsiFile();
     }
 
     @NotNull

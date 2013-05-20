@@ -28,6 +28,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import ru.salerman.bitrixstorm.bitrix.BitrixSiteTemplate;
 import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
 
 public class MarkDirectoryAsBitrixSiteTemplate extends AnAction {
@@ -35,9 +36,9 @@ public class MarkDirectoryAsBitrixSiteTemplate extends AnAction {
         DataContext dataContext = e.getDataContext();
         PsiElement path = LangDataKeys.PSI_ELEMENT.getData(dataContext);
 
-        String siteTemplate = BitrixUtils.getSiteTemplate(path);
+        String siteTemplate = BitrixSiteTemplate.getInstance(e.getProject()).getSiteTemplate(path);
 
-        BitrixUtils.setSiteTemplateName(siteTemplate);
+        BitrixSiteTemplate.getInstance(e.getProject()).setName(siteTemplate);
 
         Messages.showMessageDialog("\"" + siteTemplate + "\" was marked as Bitrix Site Template ", "Information", Messages.getInformationIcon());
     }
@@ -47,7 +48,7 @@ public class MarkDirectoryAsBitrixSiteTemplate extends AnAction {
         DataContext dataContext = e.getDataContext();
         PsiElement path = LangDataKeys.PSI_ELEMENT.getData(dataContext);
 
-        Boolean isSiteTemplate = BitrixUtils.isSiteTemplate(path);
+        Boolean isSiteTemplate = BitrixSiteTemplate.isSiteTemplate(path);
 
         if (!isSiteTemplate) {
             e.getPresentation().setVisible(false);

@@ -31,6 +31,7 @@ import com.intellij.util.IncorrectOperationException;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.salerman.bitrixstorm.bitrix.BitrixSiteTemplate;
 import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
 
 public class GoToSiteTemplateHeaderReference implements PsiReference {
@@ -61,7 +62,7 @@ public class GoToSiteTemplateHeaderReference implements PsiReference {
     @Nullable
     @Override
     public PsiElement resolve() {
-        return BitrixUtils.getSiteTemplateHeader(project);
+        return BitrixUtils.getPsiFileByPath(project, BitrixSiteTemplate.getInstance(project).getPathToHeader());
     }
 
     @NotNull

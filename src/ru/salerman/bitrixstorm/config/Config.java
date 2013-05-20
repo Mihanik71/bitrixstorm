@@ -30,22 +30,31 @@ import com.intellij.openapi.project.ProjectManager;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
+import ru.salerman.bitrixstorm.bitrix.BitrixConfig;
+import ru.salerman.bitrixstorm.bitrix.BitrixSiteTemplate;
 import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
 
 import javax.swing.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
 
 public class Config implements Configurable {
 
     private static String curSiteTemplateFromSettings = ".default";
     private static String curSiteTemplateValue = ".default";
+    private static String curBitrixPathFromSettings = "/bitrix";
+    private static String curBitrixPathValue = "/bitrix";
     private JComponent myComponent;
     private JComboBox siteTemplateName;
     private JPanel myPanel;
+    //private JButton choisePathToBitrixBtn;
+    //private JTextField pathToBitrixTextField;
     private PropertiesComponent BitrixSettings;
-    private String[] tpls;
+    private Set<String> tpls;
 
     @NonNls
-    private static final String BITRIX_SITE_TEMPLATE = "BitrixStorm.Site.Template";
     private Project project;
 
     @Nls
@@ -63,19 +72,28 @@ public class Config implements Configurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        project = BitrixUtils.getProject();
+        try {
+            project = BitrixUtils.getProject();
+            tpls = BitrixSiteTemplate.getTemplatesList(project).keySet();
+            BitrixSettings = PropertiesComponent.getInstance(project);
+            curSiteTemplateFromSettings = BitrixSettings.getValue(BitrixConfig.BITRIX_SITE_TEMPLATE, ".default");
 
-        tpls = BitrixUtils.findComponentTemplatesList();
+            getBitrixStormSettings();
 
-        BitrixSettings = PropertiesComponent.getInstance(project);
-
-        curSiteTemplateFromSettings = BitrixSettings.getValue(BITRIX_SITE_TEMPLATE, ".default");
-
-        for (int i=0; i<tpls.length; i++) {
-            siteTemplateName.addItem(tpls[i]);
-            if (tpls[i] == curSiteTemplateFromSettings) {
-                siteTemplateName.setSelectedIndex(i);
+            if (tpls != null && !tpls.isEmpty()) {
+                Iterator it = tpls.iterator();
+                int i = 0;
+                while (it.hasNext()) {
+                    String tpl = it.next().toString();
+                    siteTemplateName.addItem(tpl);
+                    if (tpl == curSiteTemplateFromSettings) {
+                        siteTemplateName.setSelectedIndex(i);
+                    }
+                    i++;
+                }
             }
+        } catch (NullPointerException npe) {
+
         }
 
         myComponent = (JComponent) myPanel;
@@ -84,33 +102,68 @@ public class Config implements Configurable {
 
     @Override
     public boolean isModified() {
-        curSiteTemplateFromSettings = BitrixSettings.getValue(BITRIX_SITE_TEMPLATE, ".default");
-        curSiteTemplateValue = (String) siteTemplateName.getSelectedItem();
-        if (curSiteTemplateValue.contentEquals(curSiteTemplateFromSettings)) {
+        try {
+            getBitrixStormSettings();
+            getCurrentValues();
+
+            if (curSiteTemplateValue.contentEquals(curSiteTemplateFromSettings)){// && curBitrixPathFromSettings.contentEquals(curBitrixPathValue)) {
+                return false;
+            }
+            return true;
+        } catch (NullPointerException npe) {
             return false;
         }
-        return true;
     }
 
     @Override
     public void apply() throws ConfigurationException {
-        curSiteTemplateFromSettings = BitrixSettings.getValue(BITRIX_SITE_TEMPLATE, ".default");
-        curSiteTemplateValue = (String) siteTemplateName.getSelectedItem();
-        if (curSiteTemplateValue != curSiteTemplateFromSettings) {
-            BitrixSettings.setValue(BITRIX_SITE_TEMPLATE, curSiteTemplateValue);
+        try {
+            getBitrixStormSettings();
+            getCurrentValues();
+
+            if (!curSiteTemplateValue.contentEquals(curSiteTemplateFromSettings)){// || !curBitrixPathFromSettings.contentEquals(curBitrixPathValue)) {
+                BitrixSettings = PropertiesComponent.getInstance(project);
+                BitrixSettings.setValue(BitrixConfig.BITRIX_SITE_TEMPLATE, curSiteTemplateValue);
+                //BitrixConfig.getInstance(project).setValue(BitrixConfig.BITRIX_PATH, curBitrixPathValue);
+            }
+        } catch (NullPointerException npe) {
+
         }
     }
 
     @Override
     public void reset() {
-        curSiteTemplateFromSettings = BitrixSettings.getValue(BITRIX_SITE_TEMPLATE, ".default");
-        curSiteTemplateValue = (String) siteTemplateName.getSelectedItem();
+        getBitrixStormSettings();
+        getCurrentValues();
 
-        for (int i=0; i<tpls.length; i++) {
-            if (tpls[i].contentEquals(curSiteTemplateFromSettings)) {
-                siteTemplateName.setSelectedIndex(i);
+        if (tpls != null && !tpls.isEmpty()) {
+            int i = 0;
+            Iterator it = tpls.iterator();
+            while (it.hasNext()) {
+                String tpl = it.next().toString();
+                if (tpl.contentEquals(curSiteTemplateFromSettings)) {
+                    siteTemplateName.setSelectedIndex(i);
+                }
+                i++;
             }
         }
+
+        //pathToBitrixTextField.setText(curBitrixPathFromSettings);
+    }
+
+    private void getBitrixStormSettings() {
+        BitrixSettings = PropertiesComponent.getInstance(project);
+        curSiteTemplateFromSettings = BitrixSettings.getValue(BitrixConfig.BITRIX_SITE_TEMPLATE, ".default");
+        //curBitrixPathFromSettings = BitrixConfig.getInstance(project).getValue(BitrixConfig.BITRIX_PATH, "/bitrix");
+    }
+
+    private void getCurrentValues() {
+        if (tpls != null) {
+            curSiteTemplateValue = (String) siteTemplateName.getSelectedItem();
+        } else {
+            curBitrixPathValue = ".default";
+        }
+        //curBitrixPathValue = pathToBitrixTextField.getText();
     }
 
     @Override
