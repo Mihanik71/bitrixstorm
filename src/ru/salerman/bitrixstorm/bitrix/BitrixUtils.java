@@ -125,10 +125,12 @@ public class BitrixUtils {
         PsiFile tpl;
         String[] order = getComponentTemplatesPathOrder(componentNameSpace, componentName, templateName, project);
 
-        for (String path : order) {
-            tpl = getPsiFileByPath(project, path);
-            if (tpl != null) {
-                return tpl;
+        if (order != null) {
+            for (String path : order) {
+                tpl = getPsiFileByPath(project, path);
+                if (tpl != null) {
+                    return tpl;
+                }
             }
         }
 
@@ -197,12 +199,16 @@ public class BitrixUtils {
     }
 
     private static PsiFile getPsiFileByPath(Project project, String defaultTemplatePath) {
-        File myFile = new File(defaultTemplatePath);
-        if(myFile.exists()) {
-            VirtualFile vFile = LocalFileSystem.getInstance().findFileByIoFile(myFile);
-            PsiFile psiFile = PsiManager.getInstance(project).findFile(vFile);
+        try {
+            File myFile = new File(defaultTemplatePath);
+            if(myFile.exists()) {
+                VirtualFile vFile = LocalFileSystem.getInstance().findFileByIoFile(myFile);
+                PsiFile psiFile = PsiManager.getInstance(project).findFile(vFile);
 
-            return psiFile;
+                return psiFile;
+            }
+        } catch (NullPointerException npe) {
+            return null;
         }
 
         return null;
