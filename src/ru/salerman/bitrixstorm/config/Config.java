@@ -23,10 +23,12 @@
 package ru.salerman.bitrixstorm.config;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.openapi.application.ImportOldConfigsPanel;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.util.SystemInfo;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
@@ -35,6 +37,9 @@ import ru.salerman.bitrixstorm.bitrix.BitrixSiteTemplate;
 import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -49,13 +54,43 @@ public class Config implements Configurable {
     private JComponent myComponent;
     private JComboBox siteTemplateName;
     private JPanel myPanel;
-    //private JButton choisePathToBitrixBtn;
-    //private JTextField pathToBitrixTextField;
+    private JTextField pathToBitrixFolder;
+    private JButton choiseBitrixFolderBtn;
     private PropertiesComponent BitrixSettings;
     private Set<String> tpls;
 
     @NonNls
     private Project project;
+
+    public Config() {
+        choiseBitrixFolderBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                JFileChooser fc = new JFileChooser(project.getBasePath());
+               // if (myLastSelection != null){
+               //     fc = new JFileChooser(myLastSelection);
+               // }
+
+                fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                //fc.setFileSelectionMode(SystemInfo.isMac ? JFileChooser.FILES_AND_DIRECTORIES : JFileChooser.DIRECTORIES_ONLY);
+                //fc.setFileHidingEnabled(!SystemInfo.isLinux);
+
+                int returnVal = fc.showOpenDialog(myComponent);
+                if (returnVal == JFileChooser.APPROVE_OPTION){
+                    File file = fc.getSelectedFile();
+                    if (file != null){
+                        String bxSrcPath = file.getAbsolutePath();
+                        setBitrixPath(bxSrcPath.replace(project.getBasePath(), ""));
+                    }
+                }
+            }
+        });
+    }
+
+    private void setBitrixPath (String path) {
+        pathToBitrixFolder.setText(path);
+        curBitrixPathValue = path;
+    }
 
     @Nls
     @Override
@@ -74,15 +109,28 @@ public class Config implements Configurable {
     public JComponent createComponent() {
         try {
             project = BitrixUtils.getProject();
-            tpls = BitrixSiteTemplate.getTemplatesList(project).keySet();
             BitrixSettings = PropertiesComponent.getInstance(project);
-            curSiteTemplateFromSettings = BitrixSettings.getValue(BitrixConfig.BITRIX_SITE_TEMPLATE, ".default");
 
             getBitrixStormSettings();
 
+            refreshTemplatesList();
+        } catch (NullPointerException npe) {
+
+        }
+
+        myComponent = (JComponent) myPanel;
+        return myComponent;
+    }
+
+    private void refreshTemplatesList() {
+        try {
+            tpls = BitrixSiteTemplate.getInstance(project).getTemplatesList().keySet();
+
             if (tpls != null && !tpls.isEmpty()) {
+                siteTemplateName.setEnabled(true);
                 Iterator it = tpls.iterator();
                 int i = 0;
+                siteTemplateName.removeAllItems();
                 while (it.hasNext()) {
                     String tpl = it.next().toString();
                     siteTemplateName.addItem(tpl);
@@ -93,11 +141,8 @@ public class Config implements Configurable {
                 }
             }
         } catch (NullPointerException npe) {
-
+            siteTemplateName.setEnabled(false);
         }
-
-        myComponent = (JComponent) myPanel;
-        return myComponent;
     }
 
     @Override
@@ -106,7 +151,7 @@ public class Config implements Configurable {
             getBitrixStormSettings();
             getCurrentValues();
 
-            if (curSiteTemplateValue.contentEquals(curSiteTemplateFromSettings)){// && curBitrixPathFromSettings.contentEquals(curBitrixPathValue)) {
+            if (curSiteTemplateValue.contentEquals(curSiteTemplateFromSettings) && curBitrixPathFromSettings.contentEquals(curBitrixPathValue)) {
                 return false;
             }
             return true;
@@ -121,10 +166,11 @@ public class Config implements Configurable {
             getBitrixStormSettings();
             getCurrentValues();
 
-            if (!curSiteTemplateValue.contentEquals(curSiteTemplateFromSettings)){// || !curBitrixPathFromSettings.contentEquals(curBitrixPathValue)) {
+            if (!curSiteTemplateValue.contentEquals(curSiteTemplateFromSettings) || !curBitrixPathFromSettings.contentEquals(curBitrixPathValue)) {
                 BitrixSettings = PropertiesComponent.getInstance(project);
                 BitrixSettings.setValue(BitrixConfig.BITRIX_SITE_TEMPLATE, curSiteTemplateValue);
-                //BitrixConfig.getInstance(project).setValue(BitrixConfig.BITRIX_PATH, curBitrixPathValue);
+                BitrixSettings.setValue(BitrixConfig.BITRIX_ROOT_PATH, curBitrixPathValue);
+                BitrixSiteTemplate.getInstance(project).refreshRootPath();
             }
         } catch (NullPointerException npe) {
 
@@ -136,25 +182,15 @@ public class Config implements Configurable {
         getBitrixStormSettings();
         getCurrentValues();
 
-        if (tpls != null && !tpls.isEmpty()) {
-            int i = 0;
-            Iterator it = tpls.iterator();
-            while (it.hasNext()) {
-                String tpl = it.next().toString();
-                if (tpl.contentEquals(curSiteTemplateFromSettings)) {
-                    siteTemplateName.setSelectedIndex(i);
-                }
-                i++;
-            }
-        }
+        refreshTemplatesList();
 
-        //pathToBitrixTextField.setText(curBitrixPathFromSettings);
+        pathToBitrixFolder.setText(curBitrixPathFromSettings);
     }
 
     private void getBitrixStormSettings() {
         BitrixSettings = PropertiesComponent.getInstance(project);
         curSiteTemplateFromSettings = BitrixSettings.getValue(BitrixConfig.BITRIX_SITE_TEMPLATE, ".default");
-        //curBitrixPathFromSettings = BitrixConfig.getInstance(project).getValue(BitrixConfig.BITRIX_PATH, "/bitrix");
+        curBitrixPathFromSettings = BitrixSettings.getValue(BitrixConfig.BITRIX_ROOT_PATH, "/bitrix");
     }
 
     private void getCurrentValues() {
@@ -163,7 +199,7 @@ public class Config implements Configurable {
         } else {
             curBitrixPathValue = ".default";
         }
-        //curBitrixPathValue = pathToBitrixTextField.getText();
+        curBitrixPathValue = pathToBitrixFolder.getText();
     }
 
     @Override

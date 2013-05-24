@@ -30,7 +30,7 @@ public class BitrixConfig {
     //private static Project project;
 
     public static final String BITRIX_SITE_TEMPLATE = "BitrixStorm.Site.Template";
-    public static final String BITRIX_PATH = "BitrixStorm.Bitrix.Path";
+    public static final String BITRIX_ROOT_PATH = "BitrixStorm.Bitrix.Path";
 
     //public static PropertiesComponent getInstance (Project project) {
     //    return PropertiesComponent.getInstance(project);

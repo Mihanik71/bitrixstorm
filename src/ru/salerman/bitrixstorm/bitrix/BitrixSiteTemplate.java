@@ -13,9 +13,10 @@ import java.util.Hashtable;
 import static java.io.File.separator;
 
 public class BitrixSiteTemplate {
-    public static final String BITRIX_SITE_TEMPLATE = "BitrixStorm.Site.Template";
-    public static final String BITRIX_SITE_TEMPLATES_PATH = separator + "bitrix" + separator + "templates" + separator;
-    public static String BITRIX_SITE_TEMPLATES_PATH_ESCAPED;
+    public static String BITRIX_SITE_TEMPLATES_PATH,
+                         BITRIX_SITE_TEMPLATES_PATH_ESCAPED,
+                         BITRIX_ROOT_PATH,
+                         BITRIX_ROOT_PATH_ESCAPED;
 
     private String templateName = null;
     private static String sep = BitrixUtils.getEscapedSeparator();
@@ -28,13 +29,20 @@ public class BitrixSiteTemplate {
     private BitrixSiteTemplate(Project prj) {
         this.templateName = getName();
         project = prj;
+        refreshRootPath();
     }
-    
+
+    public void refreshRootPath() {
+        BITRIX_ROOT_PATH = BitrixSettings.getValue(BitrixConfig.BITRIX_ROOT_PATH, "/bitrix");
+        BITRIX_ROOT_PATH_ESCAPED = BITRIX_ROOT_PATH.replace("/", sep);
+        BITRIX_SITE_TEMPLATES_PATH = BITRIX_ROOT_PATH + separator + "templates" + separator;
+        BITRIX_SITE_TEMPLATES_PATH_ESCAPED = BITRIX_ROOT_PATH_ESCAPED + sep + "templates" + sep;
+    }
+
     public static BitrixSiteTemplate getInstance (Project prj) {
         if (instance == null) {
             project = prj;
             instance = new BitrixSiteTemplate(project);
-            BITRIX_SITE_TEMPLATES_PATH_ESCAPED = sep + "bitrix" + sep + "templates" + sep;
         }
         return instance;
     }
@@ -42,14 +50,14 @@ public class BitrixSiteTemplate {
     public String getName() {
         if (this.templateName == null) {
             this.BitrixSettings = PropertiesComponent.getInstance(project);
-            this.templateName = this.BitrixSettings.getValue(BITRIX_SITE_TEMPLATE, ".default");
+            this.templateName = this.BitrixSettings.getValue(BitrixConfig.BITRIX_SITE_TEMPLATE, ".default");
         }
         return templateName;
     }
 
     public void setName(String templateName) {
         this.BitrixSettings = PropertiesComponent.getInstance(project);
-        this.BitrixSettings.setValue(BITRIX_SITE_TEMPLATE, templateName);
+        this.BitrixSettings.setValue(BitrixConfig.BITRIX_SITE_TEMPLATE, templateName);
         this.templateName = templateName;
     }
 
@@ -85,11 +93,28 @@ public class BitrixSiteTemplate {
         return false;
     }
 
-    public static Hashtable<String, String> getTemplatesList (Project project) {
+    public static Hashtable<String, String> getTemplatesList () {
         Hashtable<String, String> templates = new Hashtable<String, String>();
 
         try {
-            VirtualFile baseDir = project.getBaseDir().findChild("bitrix").findChild("templates");
+            VirtualFile baseDir = project.getBaseDir();
+            if (BITRIX_ROOT_PATH == sep + "bitrix") {
+                baseDir = baseDir.findChild("bitrix").findChild("templates");
+            } else {
+                String[] dirs = BITRIX_ROOT_PATH_ESCAPED.split(sep);
+                if (dirs != null) {
+                    for (int i = 0; i < dirs.length; i++) {
+                        if (dirs[i] != null && !dirs[i].contentEquals("")) {
+                            String dir = dirs[i];
+                            baseDir = baseDir.findChild(dir);
+                        }
+                    }
+                    baseDir = baseDir.findChild("templates");
+                }
+            }
+
+            if (baseDir == null) return null;
+
             PsiDirectory directory = PsiManager.getInstance(project).findDirectory(baseDir);
             PsiElement[] children = directory.getChildren();
 
