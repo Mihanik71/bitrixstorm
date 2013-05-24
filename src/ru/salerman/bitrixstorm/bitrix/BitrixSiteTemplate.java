@@ -54,10 +54,12 @@ public class BitrixSiteTemplate {
     }
 
     public String getPathToHeader() {
+        if (project == null) return null;
         return project.getBasePath() + BITRIX_SITE_TEMPLATES_PATH + templateName + sep + "header.php";
     }
 
     public String getPathToFooter() {
+        if (project == null) return null;
         return project.getBasePath() + BITRIX_SITE_TEMPLATES_PATH + templateName + sep + "footer.php";
     }
 

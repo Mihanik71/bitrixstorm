@@ -45,11 +45,13 @@ public class MarkDirectoryAsBitrixSiteTemplate extends AnAction {
 
     @Override
     public void update(AnActionEvent e) {
+        Boolean isSiteTemplate = false;
         DataContext dataContext = e.getDataContext();
         PsiElement path = LangDataKeys.PSI_ELEMENT.getData(dataContext);
 
-        Boolean isSiteTemplate = BitrixSiteTemplate.isSiteTemplate(path);
-
+        if (path != null) {
+            isSiteTemplate = BitrixSiteTemplate.getInstance(e.getProject()).isSiteTemplate(path);
+        }
         if (!isSiteTemplate) {
             e.getPresentation().setVisible(false);
             e.getPresentation().setEnabled(false);

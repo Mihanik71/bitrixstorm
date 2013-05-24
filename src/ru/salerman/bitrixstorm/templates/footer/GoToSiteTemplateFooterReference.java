@@ -62,7 +62,7 @@ public class GoToSiteTemplateFooterReference implements PsiReference {
     @Nullable
     @Override
     public PsiElement resolve() {
-        return BitrixUtils.getPsiFileByPath(project, BitrixSiteTemplate.getInstance(project).getPathToFooter());
+        return BitrixUtils.getPsiFileByPath(this.project, BitrixSiteTemplate.getInstance(this.project).getPathToFooter());
     }
 
     @NotNull
