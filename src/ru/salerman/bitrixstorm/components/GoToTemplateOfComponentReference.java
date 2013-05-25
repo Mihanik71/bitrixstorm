@@ -28,12 +28,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
-import com.jetbrains.php.lang.psi.elements.ParameterList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.salerman.bitrixstorm.bitrix.BitrixComponent;
-import ru.salerman.bitrixstorm.bitrix.BitrixComponentTemplate;
-import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
 
 public class GoToTemplateOfComponentReference implements PsiReference {
 
@@ -42,10 +39,12 @@ public class GoToTemplateOfComponentReference implements PsiReference {
     private PsiElement psiElement;
     private TextRange textRange;
     private BitrixComponent component;
+    private Project project;
 
 
-    public GoToTemplateOfComponentReference(final PsiElement psiElement, Project project) {
+    public GoToTemplateOfComponentReference(final PsiElement psiElement, Project prj) {
         this.psiElement = psiElement;
+        project = prj;
         PsiElement parent = psiElement.getParent();
         if (parent.toString() != "Parameter list") {
             this.isBitrixTemplate = false;

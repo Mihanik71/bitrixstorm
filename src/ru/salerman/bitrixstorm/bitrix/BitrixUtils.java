@@ -23,21 +23,46 @@
 package ru.salerman.bitrixstorm.bitrix;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.Language;
+import com.intellij.navigation.ItemPresentation;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.util.Iconable;
+import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
+import com.intellij.psi.*;
+import com.intellij.psi.impl.file.PsiDirectoryImpl;
+import com.intellij.psi.scope.PsiScopeProcessor;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.PsiElementProcessor;
+import com.intellij.psi.search.SearchScope;
+import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.io.File;
 
 import static java.io.File.*;
 
 public class BitrixUtils {
+
+    public static VirtualFile getContext(Project project) {
+        VirtualFile context = null;
+        FileEditorManager manager = FileEditorManager.getInstance(project);
+        VirtualFile files[] = manager.getSelectedFiles();
+        if (files != null) {
+            if (files[0].toString().contains("bitrix")) {
+                context = files[0];
+            }
+        }
+        return context;
+    }
 
     /**
      * Get right-way separator
@@ -87,13 +112,33 @@ public class BitrixUtils {
      * @param defaultTemplatePath
      * @return
      */
-    public static PsiFile getPsiFileByPath(Project project, String defaultTemplatePath) {
+    public static PsiFile getPsiFileByPath(@NotNull Project project, String defaultTemplatePath) {
         try {
-            File myFile = new File(defaultTemplatePath);
-            if(myFile.exists()) {
-                VirtualFile vFile = LocalFileSystem.getInstance().findFileByIoFile(myFile);
+            VirtualFile vFile = LocalFileSystem.getInstance().findFileByPath(defaultTemplatePath);
+            if (vFile != null) {
                 PsiFile psiFile = PsiManager.getInstance(project).findFile(vFile);
 
+                return psiFile;
+            }
+        } catch (NullPointerException npe) {
+            return null;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get PSI dir by path-string
+     *
+     * @param project
+     * @param defaultTemplatePath
+     * @return
+     */
+    public static PsiDirectory getPsiDirByPath(@NotNull Project project, String defaultTemplatePath) {
+        try {
+            VirtualFile vFile = LocalFileSystem.getInstance().findFileByPath(defaultTemplatePath);
+            if (vFile != null) {
+                PsiDirectory psiFile = PsiManager.getInstance(project).findDirectory(vFile);
                 return psiFile;
             }
         } catch (NullPointerException npe) {
@@ -109,7 +154,7 @@ public class BitrixUtils {
      * @param directory
      * @return
      */
-    public static String getFileNameByPsiElement(PsiElement directory) {
+    public static String getFileNameByPsiElement(@NotNull PsiElement directory) {
         String sep = getEscapedSeparator();
         String raw = directory.toString();
         String[] fullPath = raw.split(sep);
@@ -122,7 +167,7 @@ public class BitrixUtils {
      * @param directory
      * @return
      */
-    public static String getPathByPsiElement(PsiElement directory) {
+    public static String getPathByPsiElement(@NotNull PsiElement directory) {
         return directory.toString().replace("PsiElement:", "").replace("PsiDirectory:", "").replace("PsiFile:", "");
     }
 

@@ -7,6 +7,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Hashtable;
 
@@ -19,16 +20,15 @@ public class BitrixSiteTemplate {
                          BITRIX_ROOT_PATH_ESCAPED;
 
     private String templateName = null;
-    private static String sep = BitrixUtils.getEscapedSeparator();
+    public static String sep = BitrixUtils.getEscapedSeparator();
     private static BitrixSiteTemplate instance = null;
 
-    @NonNls
-    private static Project project;
+    private Project project;
     private PropertiesComponent BitrixSettings;
 
-    private BitrixSiteTemplate(Project prj) {
+    private BitrixSiteTemplate(@NotNull Project prj) {
+        this.project = prj;
         this.templateName = getName();
-        project = prj;
         refreshRootPath();
     }
 
@@ -39,39 +39,36 @@ public class BitrixSiteTemplate {
         BITRIX_SITE_TEMPLATES_PATH_ESCAPED = BITRIX_ROOT_PATH_ESCAPED + sep + "templates" + sep;
     }
 
-    public static BitrixSiteTemplate getInstance (Project prj) {
+    public static BitrixSiteTemplate getInstance (@NotNull Project prj) {
         if (instance == null) {
-            project = prj;
-            instance = new BitrixSiteTemplate(project);
+            instance = new BitrixSiteTemplate(prj);
         }
         return instance;
     }
 
     public String getName() {
         if (this.templateName == null) {
-            this.BitrixSettings = PropertiesComponent.getInstance(project);
+            this.BitrixSettings = PropertiesComponent.getInstance(this.project);
             this.templateName = this.BitrixSettings.getValue(BitrixConfig.BITRIX_SITE_TEMPLATE, ".default");
         }
-        return templateName;
+        return this.templateName;
     }
 
     public void setName(String templateName) {
-        this.BitrixSettings = PropertiesComponent.getInstance(project);
+        this.BitrixSettings = PropertiesComponent.getInstance(this.project);
         this.BitrixSettings.setValue(BitrixConfig.BITRIX_SITE_TEMPLATE, templateName);
         this.templateName = templateName;
     }
 
     public String getPathToHeader() {
-        if (project == null) return null;
-        return project.getBasePath() + BITRIX_SITE_TEMPLATES_PATH + templateName + sep + "header.php";
+        return this.project.getBasePath() + BITRIX_SITE_TEMPLATES_PATH + this.templateName + sep + "header.php";
     }
 
     public String getPathToFooter() {
-        if (project == null) return null;
-        return project.getBasePath() + BITRIX_SITE_TEMPLATES_PATH + templateName + sep + "footer.php";
+        return this.project.getBasePath() + BITRIX_SITE_TEMPLATES_PATH + this.templateName + sep + "footer.php";
     }
 
-    public String getSiteTemplate (PsiElement path) {
+    public String getSiteTemplate (@NotNull PsiElement path) {
         String pathToTpl = path.toString();
         if (pathToTpl.contains(BITRIX_SITE_TEMPLATES_PATH)) {
             String[] split = pathToTpl.split(BITRIX_SITE_TEMPLATES_PATH_ESCAPED);
@@ -82,7 +79,7 @@ public class BitrixSiteTemplate {
         return null;
     }
 
-    public static boolean isSiteTemplate (PsiElement path) {
+    public boolean isSiteTemplate (@NotNull PsiElement path) {
         String pathToTpl = path.toString();
         if (pathToTpl != null && pathToTpl.contains(BITRIX_SITE_TEMPLATES_PATH)) {
             String[] split = pathToTpl.split(BITRIX_SITE_TEMPLATES_PATH_ESCAPED);
@@ -93,11 +90,11 @@ public class BitrixSiteTemplate {
         return false;
     }
 
-    public static Hashtable<String, String> getTemplatesList () {
+    public Hashtable<String, String> getTemplatesList () {
         Hashtable<String, String> templates = new Hashtable<String, String>();
 
         try {
-            VirtualFile baseDir = project.getBaseDir();
+            VirtualFile baseDir = this.project.getBaseDir();
             if (BITRIX_ROOT_PATH == sep + "bitrix") {
                 baseDir = baseDir.findChild("bitrix").findChild("templates");
             } else {
@@ -115,7 +112,7 @@ public class BitrixSiteTemplate {
 
             if (baseDir == null) return null;
 
-            PsiDirectory directory = PsiManager.getInstance(project).findDirectory(baseDir);
+            PsiDirectory directory = PsiManager.getInstance(this.project).findDirectory(baseDir);
             PsiElement[] children = directory.getChildren();
 
             for (int i = 0; i < children.length; i++) {

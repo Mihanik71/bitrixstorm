@@ -14,9 +14,16 @@ package ru.salerman.bitrixstorm.bitrix;/*
  * limitations under the License.
  */
 
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.util.PsiNavigateUtil;
 
 import java.util.List;
 
@@ -40,7 +47,11 @@ public class BitrixComponent {
         this.namespace = namespace;
         this.templateName = templateName;
 
-        template = new BitrixComponentTemplate(this);
+        if (isComplex()) {
+            this.template = new BitrixComplexComponentTemplate(this);
+        } else {
+            this.template = new BitrixComponentTemplate(this);
+        }
     }
 
     public String getNamespace () {
@@ -88,6 +99,18 @@ public class BitrixComponent {
         }
 
         return null;
+    }
+
+    public boolean isComplex() {
+        String sep = BitrixSiteTemplate.sep;
+        String[] templatesList = BitrixComponentTemplate.getComponentTemplatesPathOrder(this.namespace, this.component, this.templateName, this.project);
+        for (String path : templatesList) {
+            PsiFile templateFile = BitrixUtils.getPsiFileByPath(this.project, path);
+            if (templateFile != null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static String getComponentNamespaceFromString (String string) {

@@ -47,10 +47,10 @@ import java.util.Set;
 
 public class Config implements Configurable {
 
-    private static String curSiteTemplateFromSettings = ".default";
-    private static String curSiteTemplateValue = ".default";
-    private static String curBitrixPathFromSettings = "/bitrix";
-    private static String curBitrixPathValue = "/bitrix";
+    private String curSiteTemplateFromSettings = ".default";
+    private String curSiteTemplateValue = ".default";
+    private String curBitrixPathFromSettings = "/bitrix";
+    private String curBitrixPathValue = "/bitrix";
     private JComponent myComponent;
     private JComboBox siteTemplateName;
     private JPanel myPanel;
@@ -59,7 +59,6 @@ public class Config implements Configurable {
     private PropertiesComponent BitrixSettings;
     private Set<String> tpls;
 
-    @NonNls
     private Project project;
 
     public Config() {
@@ -67,9 +66,6 @@ public class Config implements Configurable {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 JFileChooser fc = new JFileChooser(project.getBasePath());
-               // if (myLastSelection != null){
-               //     fc = new JFileChooser(myLastSelection);
-               // }
 
                 fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 //fc.setFileSelectionMode(SystemInfo.isMac ? JFileChooser.FILES_AND_DIRECTORIES : JFileChooser.DIRECTORIES_ONLY);
@@ -134,7 +130,7 @@ public class Config implements Configurable {
                 while (it.hasNext()) {
                     String tpl = it.next().toString();
                     siteTemplateName.addItem(tpl);
-                    if (tpl == curSiteTemplateFromSettings) {
+                    if (tpl.contentEquals(curSiteTemplateFromSettings)) {
                         siteTemplateName.setSelectedIndex(i);
                     }
                     i++;
@@ -180,7 +176,7 @@ public class Config implements Configurable {
     @Override
     public void reset() {
         getBitrixStormSettings();
-        getCurrentValues();
+        //getCurrentValues();
 
         refreshTemplatesList();
 

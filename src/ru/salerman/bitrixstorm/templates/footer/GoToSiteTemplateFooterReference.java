@@ -46,24 +46,24 @@ public class GoToSiteTemplateFooterReference implements PsiReference {
         this.templateString = psiElement.getText();
         this.project = project;
 
-        textRange = new TextRange(7, this.templateString.length() - 1);
+        this.textRange = new TextRange(7, this.templateString.length() - 1);
     }
 
     @Override
     public PsiElement getElement() {
-        return psiElement;
+        return this.psiElement;
     }
 
     @Override
     public TextRange getRangeInElement() {
-        return textRange;
+        return this.textRange;
     }
 
     @Nullable
     @Override
     public PsiElement resolve() {
         if (project == null) return null;
-        return BitrixUtils.getPsiFileByPath(project, BitrixSiteTemplate.getInstance(project).getPathToFooter());
+        return BitrixUtils.getPsiFileByPath(this.project, BitrixSiteTemplate.getInstance(this.project).getPathToFooter());
     }
 
     @NotNull

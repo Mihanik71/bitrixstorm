@@ -31,8 +31,6 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.salerman.bitrixstorm.bitrix.BitrixComponent;
-import ru.salerman.bitrixstorm.bitrix.BitrixComponentTemplate;
-import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
 
 public class GoToComponentSrcReference implements PsiReference {
 

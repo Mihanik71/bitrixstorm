@@ -20,38 +20,63 @@
  * @date: 23.04.2013
  */
 
-package ru.salerman.bitrixstorm.templates.header;
+package ru.salerman.bitrixstorm.components;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.ResolveResult;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
-import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.salerman.bitrixstorm.bitrix.BitrixSiteTemplate;
-import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
+import ru.salerman.bitrixstorm.bitrix.BitrixComponent;
 
-public class GoToSiteTemplateHeaderReference implements PsiReference {
+import java.util.ArrayList;
+import java.util.List;
 
+public class GoToTemplateOfComplexComponentReference implements PsiReference {
+
+    public Boolean isBitrixTemplate = true;
     private String templateString;
-    private Project project;
     private PsiElement psiElement;
     private TextRange textRange;
+    private BitrixComponent component;
 
-    public GoToSiteTemplateHeaderReference(final PsiElement psiElement, Project project) {
+
+    public GoToTemplateOfComplexComponentReference(final PsiElement psiElement, Project project) {
         this.psiElement = psiElement;
-        this.templateString = psiElement.getText();
-        this.project = project;
+        PsiElement parent = psiElement.getParent();
+        if (parent.toString() != "Parameter list") {
+            this.isBitrixTemplate = false;
+            return;
+        }
+        this.templateString = parent.getText();
 
-        this.textRange = new TextRange(7, this.templateString.length() - 1);
+        if (!this.templateString.contains(":")) {
+            this.isBitrixTemplate = false;
+            return;
+        }
+
+        this.component = BitrixComponent.initComponentFromString(templateString);
+
+        int start, stop;
+        if (this.component.getTemplateName() == "") {
+            start = 0;
+            stop = start +2;
+        } else {
+            start = 1;
+            stop = this.component.getTemplateName().length() + 1;
+        }
+
+        this.textRange = new TextRange(start, stop);
     }
 
     @Override
     public PsiElement getElement() {
-        return this.psiElement;
+        return psiElement;
     }
 
     @Override
@@ -62,7 +87,7 @@ public class GoToSiteTemplateHeaderReference implements PsiReference {
     @Nullable
     @Override
     public PsiElement resolve() {
-        return BitrixUtils.getPsiFileByPath(this.project, BitrixSiteTemplate.getInstance(this.project).getPathToHeader());
+        return component.getTemplate().toPsiFile();
     }
 
     @NotNull
@@ -94,6 +119,13 @@ public class GoToSiteTemplateHeaderReference implements PsiReference {
 
     @Override
     public boolean isSoft() {
-        return true;
+        return false;
     }
+/*
+    @NotNull
+    @Override
+    public ResolveResult[] multiResolve(boolean incompleteCode) {
+        return component.getTemplate().getResolveList();
+    }
+*/
 }

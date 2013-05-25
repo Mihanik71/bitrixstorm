@@ -18,37 +18,21 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 
-import static java.io.File.separator;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Mikhail Medvedev aka r3c130n <mm@salerman.ru>
  * @link http://www.salerman.ru/
  * @date: 20.05.13
  */
-public class BitrixComponentTemplate {
-    public String name, description, path;
-    public boolean isWithParameters = false;
-    public boolean isWithResultModifier = false;
-    public boolean isWithComponentEpilog = false;
-    public boolean isWithLangFiles = false;
-    public boolean isWithStyle = false;
-    public boolean isWithScript = false;
-    protected PsiElement psiTemplate = null;
-
-    protected BitrixComponentTemplate () {
-
-    }
-
-    public BitrixComponentTemplate(BitrixComponent component) {
+public class BitrixComplexComponentTemplate extends BitrixComponentTemplate {
+    public BitrixComplexComponentTemplate(BitrixComponent component) {
         this.psiTemplate = findComponentTemplate(component);
         if (this.psiTemplate == null) {
             return;
         }
-        this.path = BitrixUtils.getFileNameByPsiElement(psiTemplate);
-    }
-
-    public PsiElement toPsiFile () {
-        return this.psiTemplate;
+        this.path = BitrixUtils.getPathByPsiElement(psiTemplate);
     }
 
     public static PsiElement findComponentTemplate(BitrixComponent component) {
@@ -57,7 +41,7 @@ public class BitrixComponentTemplate {
 
         if (order != null) {
             for (String path : order) {
-                tpl = BitrixUtils.getPsiFileByPath(component.getProject(), path);
+                tpl = BitrixUtils.getPsiDirByPath(component.getProject(), path);
                 if (tpl != null) {
                     return tpl;
                 }
@@ -80,47 +64,53 @@ public class BitrixComponentTemplate {
 
             String path = context.getPath().replace(context.getName(), "");
             order[i++]  = path
-                        + componentNameSpace
-                        + sep + componentName
-                        + sep + templateName
-                        + sep + "template.php";
+                    + componentNameSpace
+                    + sep + componentName
+                    + sep + templateName;
         } else {
             order = new String[3];
         }
 
         order[i++]    = project.getBasePath()
-                + BitrixSiteTemplate.getInstance(project).BITRIX_SITE_TEMPLATES_PATH
-                + BitrixSiteTemplate.getInstance(project).getName()
+                + BitrixSiteTemplate.BITRIX_SITE_TEMPLATES_PATH + BitrixSiteTemplate.getInstance(project).getName()
                 + sep + "components"
                 + sep + componentNameSpace
                 + sep + componentName
-                + sep + templateName
-                + sep + "template.php";
+                + sep + templateName;
 
         order[i++]    = project.getBasePath()
-                + BitrixSiteTemplate.getInstance(project).BITRIX_SITE_TEMPLATES_PATH
-                + ".default"
+                + BitrixSiteTemplate.BITRIX_SITE_TEMPLATES_PATH + ".default"
                 + sep + "components"
                 + sep + componentNameSpace
                 + sep + componentName
-                + sep + templateName
-                + sep + "template.php";
+                + sep + templateName;
 
         order[i++]    = project.getBasePath()
-                + BitrixSiteTemplate.getInstance(project).BITRIX_ROOT_PATH
+                + sep + "bitrix"
                 + sep + "components"
                 + sep + componentNameSpace
                 + sep + componentName
                 + sep + "templates"
-                + sep + templateName
-                + sep + "template.php";
+                + sep + templateName;
 
         return order;
     }
 
     /*
     public ResolveResult[] getResolveList() {
-        return new ResolveResult[0];
+        List<ResolveResult> results = new ArrayList<ResolveResult>();
+
+        for (PsiElement file : getTemplateFiles()) {
+            results.add(new PsiElementResolveResult(file));
+        }
+
+        return results.toArray(new ResolveResult[results.size()]);
+    }
+
+    public PsiElement[] getTemplateFiles() {
+        PsiElement[] children = this.psiTemplate.getChildren();
+
+        return children;
     }
     */
 }
