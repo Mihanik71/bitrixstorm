@@ -22,10 +22,13 @@
 
 package ru.salerman.bitrixstorm.bitrix;
 
+import com.intellij.ide.DataManager;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
@@ -82,10 +85,8 @@ public class BitrixUtils {
      * @return Project project
      */
     public static Project getProject() {
-        // TODO: make this code right way
-        ProjectManager instance = ProjectManager.getInstance();
-        Project[] openProjects = instance.getOpenProjects();
-        return openProjects[0];
+        DataContext dataContext = DataManager.getInstance().getDataContext();
+	    return PlatformDataKeys.PROJECT.getData(dataContext);
     }
 
     public static PsiFile getIncludeFile(String path, Project project) {
