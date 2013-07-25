@@ -31,6 +31,10 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.salerman.bitrixstorm.bitrix.BitrixComponent;
+import ru.salerman.bitrixstorm.bitrix.BitrixComponentManager;
+import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
+
+import java.util.Hashtable;
 
 public class GoToTemplateOfComponentReference implements PsiReference {
 
@@ -38,13 +42,15 @@ public class GoToTemplateOfComponentReference implements PsiReference {
     private String templateString;
     private PsiElement psiElement;
     private TextRange textRange;
-    private BitrixComponent component;
+    private Hashtable<String, String> componentVars;
+	private BitrixComponent component;
     private Project project;
 
 
-    public GoToTemplateOfComponentReference(final PsiElement psiElement, Project prj) {
+    public GoToTemplateOfComponentReference(final PsiElement psiElement, Project project) {
+	    BitrixUtils.setProject(project);
         this.psiElement = psiElement;
-        project = prj;
+        this.project = project;
         PsiElement parent = psiElement.getParent();
         if (parent.toString() != "Parameter list") {
             this.isBitrixTemplate = false;
@@ -57,15 +63,18 @@ public class GoToTemplateOfComponentReference implements PsiReference {
             return;
         }
 
-        this.component = BitrixComponent.initComponentFromString(templateString);
+        this.componentVars = BitrixComponent.parseComponentFromString(templateString);
+	    this.component = BitrixComponentManager.getInstance(this.project).getComponent(this.componentVars.get("hash"));
+
 
         int start, stop;
-        if (this.component.getTemplateName() == "") {
+	    String tpl = this.componentVars.get("template");
+        if (tpl == null || tpl == "") {
             start = 0;
             stop = start +2;
         } else {
             start = 1;
-            stop = this.component.getTemplateName().length() + 1;
+            stop = tpl.length() + 1;
         }
 
         this.textRange = new TextRange(start, stop);
@@ -84,7 +93,12 @@ public class GoToTemplateOfComponentReference implements PsiReference {
     @Nullable
     @Override
     public PsiElement resolve() {
-        return component.getTemplate().toPsiFile();
+	    BitrixUtils.setProject(this.project);
+	    if(this.component.isComplex()) {
+		    return component.getTemplate(this.componentVars.get("template")).toPsiDirectory();
+	    } else {
+		    return component.getTemplate(this.componentVars.get("template")).toPsiFile();
+	    }
     }
 
     @NotNull

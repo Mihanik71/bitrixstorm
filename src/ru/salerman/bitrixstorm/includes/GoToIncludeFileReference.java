@@ -57,6 +57,7 @@ public class GoToIncludeFileReference implements PsiReference {
         this.templateString = psiElement.getText();
         this.project = project;
         this.cleanString = psiElement.getText().replace("\"", "");
+	    BitrixUtils.setProject(this.project);
 
         if (this.cleanString.contentEquals("/bitrix/header.php") || this.cleanString.contentEquals("/bitrix/footer.php")) {
              this.isExcludedFile = true;
@@ -79,7 +80,8 @@ public class GoToIncludeFileReference implements PsiReference {
     @Nullable
     @Override
     public PsiElement resolve() {
-        return BitrixUtils.getIncludeFile(cleanString, project);
+	    BitrixUtils.setProject(this.project);
+        return BitrixUtils.getIncludeFile(cleanString);
     }
 
     @NotNull

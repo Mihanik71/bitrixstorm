@@ -26,7 +26,8 @@ import java.util.List;
  * @link http://www.salerman.ru/
  * @date: 20.05.13
  */
-public class BitrixComplexComponentTemplate extends BitrixComponentTemplate {
+public class BitrixComplexComponentTemplate {   // extends BitrixComponentTemplate
+	/*
     public BitrixComplexComponentTemplate(BitrixComponent component) {
         this.psiTemplate = findComponentTemplate(component);
         if (this.psiTemplate == null) {
@@ -50,7 +51,7 @@ public class BitrixComplexComponentTemplate extends BitrixComponentTemplate {
 
         return null;
     }
-
+         */
     public static String[] getComponentTemplatesPathOrder(String componentNameSpace, String componentName, String templateName, Project project) {
         String sep = BitrixUtils.getEscapedSeparator();
         String[] order;

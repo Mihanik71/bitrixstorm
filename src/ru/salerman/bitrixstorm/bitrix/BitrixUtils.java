@@ -54,6 +54,7 @@ import java.io.File;
 import static java.io.File.*;
 
 public class BitrixUtils {
+	private static Project project = null;
 
     public static VirtualFile getContext(Project project) {
         VirtualFile context = null;
@@ -85,11 +86,23 @@ public class BitrixUtils {
      * @return Project project
      */
     public static Project getProject() {
-        DataContext dataContext = DataManager.getInstance().getDataContext();
+	    /*DataContext dataContext = DataManager.getInstance().getDataContext();
 	    return PlatformDataKeys.PROJECT.getData(dataContext);
+	    */
+	    if (project == null) {
+		    ProjectManager instance = ProjectManager.getInstance();
+		    Project[] openProjects = instance.getOpenProjects();
+		    project = openProjects[0];
+	    }
+	    return project;
     }
 
-    public static PsiFile getIncludeFile(String path, Project project) {
+	public static void setProject(Project prj) {
+		project = prj;
+	}
+
+    public static PsiFile getIncludeFile(String path) {
+	    Project project = getProject();
         String sep = getEscapedSeparator();
 
         if (path.endsWith("/")) {
@@ -103,18 +116,18 @@ public class BitrixUtils {
         if (!path.startsWith("/")) {
             path = BitrixSiteTemplate.BITRIX_SITE_TEMPLATES_PATH + BitrixSiteTemplate.getInstance(project).getName() + sep + path;
         }
-        return getPsiFileByPath(project, project.getBasePath() + path);
+        return getPsiFileByPath(project.getBasePath() + path);
     }
 
     /**
      * Get PSI file by path-string
      *
-     * @param project
      * @param defaultTemplatePath
      * @return
      */
-    public static PsiFile getPsiFileByPath(@NotNull Project project, String defaultTemplatePath) {
-        try {
+    public static PsiFile getPsiFileByPath(String defaultTemplatePath) {
+	    Project project = getProject();
+	    try {
             VirtualFile vFile = LocalFileSystem.getInstance().findFileByPath(defaultTemplatePath);
             if (vFile != null) {
                 PsiFile psiFile = PsiManager.getInstance(project).findFile(vFile);
@@ -131,11 +144,11 @@ public class BitrixUtils {
     /**
      * Get PSI dir by path-string
      *
-     * @param project
      * @param defaultTemplatePath
      * @return
      */
-    public static PsiDirectory getPsiDirByPath(@NotNull Project project, String defaultTemplatePath) {
+    public static PsiDirectory getPsiDirByPath(String defaultTemplatePath) {
+	    Project project = getProject();
         try {
             VirtualFile vFile = LocalFileSystem.getInstance().findFileByPath(defaultTemplatePath);
             if (vFile != null) {

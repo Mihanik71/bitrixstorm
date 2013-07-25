@@ -21,7 +21,7 @@ public class BitrixSiteTemplate {
 
     private String templateName = null;
     public static String sep = BitrixUtils.getEscapedSeparator();
-    private static BitrixSiteTemplate instance = null;
+	private static Hashtable<String, BitrixSiteTemplate> instancesList;
 
     private Project project;
     private PropertiesComponent BitrixSettings;
@@ -39,11 +39,17 @@ public class BitrixSiteTemplate {
         BITRIX_SITE_TEMPLATES_PATH_ESCAPED = BITRIX_ROOT_PATH_ESCAPED + sep + "templates" + sep;
     }
 
-    public static BitrixSiteTemplate getInstance (@NotNull Project prj) {
-        if (instance == null) {
-            instance = new BitrixSiteTemplate(prj);
-        }
-        return instance;
+    public static BitrixSiteTemplate getInstance (@NotNull Project project) {
+	    String hash = project.getLocationHash();
+
+	    if (instancesList == null) {
+		    instancesList = new Hashtable<String, BitrixSiteTemplate>();
+	    }
+
+	    if (!instancesList.containsKey(hash)) {
+		    instancesList.put(hash, new BitrixSiteTemplate(project));
+	    }
+	    return instancesList.get(hash);
     }
 
     public String getName() {

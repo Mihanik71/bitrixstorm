@@ -18,6 +18,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 
+import java.util.Hashtable;
+
 import static java.io.File.separator;
 
 /**
@@ -26,38 +28,58 @@ import static java.io.File.separator;
  * @date: 20.05.13
  */
 public class BitrixComponentTemplate {
-    public String name, description, path;
-    public boolean isWithParameters = false;
-    public boolean isWithResultModifier = false;
-    public boolean isWithComponentEpilog = false;
-    public boolean isWithLangFiles = false;
-    public boolean isWithStyle = false;
-    public boolean isWithScript = false;
-    protected PsiElement psiTemplate = null;
+    public String templateName, path;
+	private Hashtable<String, BitrixEntity> templateEntities = new Hashtable<String, BitrixEntity>();
 
-    protected BitrixComponentTemplate () {
+	protected PsiElement psiTemplateFile = null;
+	protected PsiElement psiTemplateDirectory = null;
+	private VirtualFile templateDirectory;
 
-    }
+	public BitrixComponentTemplate (String templateName, VirtualFile templateDirectory) {
+		this.templateDirectory = templateDirectory;
+		this.templateName = templateName;
+		String templatePath = templateDirectory.getPath();
+		this.psiTemplateFile = BitrixUtils.getPsiFileByPath (templatePath + "/template.php");
+		this.psiTemplateDirectory = BitrixUtils.getPsiDirByPath(templatePath);
 
-    public BitrixComponentTemplate(BitrixComponent component) {
-        this.psiTemplate = findComponentTemplate(component);
-        if (this.psiTemplate == null) {
-            return;
-        }
-        this.path = BitrixUtils.getFileNameByPsiElement(psiTemplate);
-    }
+		this.templateEntities.put("template", new BitrixEntity(templatePath + "/template.php"));
+		this.templateEntities.put("parameters", new BitrixEntity(templatePath + "/.parameters.php"));
+		this.templateEntities.put("result_modifier", new BitrixEntity(templatePath + "/result_modifier.php"));
+		this.templateEntities.put("component_epilog", new BitrixEntity(templatePath + "/component_epilog.php"));
+		this.templateEntities.put("style", new BitrixEntity(templatePath + "/style.css"));
+		this.templateEntities.put("script", new BitrixEntity(templatePath + "/script.js"));
+	}
+
+
+	public void setCodeTpl(String type, BitrixEntityCodeTemplate codeTpl) {
+		if (this.templateEntities.containsKey(type)) {
+			this.templateEntities.get(type).setTemplate(codeTpl);
+		}
+	}
+
+	public void Create (String type) {
+		if (this.templateEntities.containsKey(type)) {
+			this.templateEntities.get(type).Create();
+		}
+	}
+
 
     public PsiElement toPsiFile () {
-        return this.psiTemplate;
+        return this.psiTemplateFile;
     }
 
+	public PsiElement toPsiDirectory () {
+		return this.psiTemplateDirectory;
+	}
+
     public static PsiElement findComponentTemplate(BitrixComponent component) {
+	    Project project = BitrixUtils.getProject();
         PsiElement tpl;
-        String[] order = getComponentTemplatesPathOrder(component.getNamespace(), component.getName(), component.getTemplateName(), component.getProject());
+        String[] order = getComponentTemplatesPathOrder(component.getNamespace(), component.getName(), ".default");
 
         if (order != null) {
             for (String path : order) {
-                tpl = BitrixUtils.getPsiFileByPath(component.getProject(), path);
+                tpl = BitrixUtils.getPsiFileByPath(path);
                 if (tpl != null) {
                     return tpl;
                 }
@@ -67,7 +89,8 @@ public class BitrixComponentTemplate {
         return null;
     }
 
-    public static String[] getComponentTemplatesPathOrder(String componentNameSpace, String componentName, String templateName, Project project) {
+    public static String[] getComponentTemplatesPathOrder(String componentNameSpace, String componentName, String templateName) {
+	    Project project = BitrixUtils.getProject();
         String sep = BitrixUtils.getEscapedSeparator();
         String[] order;
         if (templateName == "") {
@@ -117,10 +140,4 @@ public class BitrixComponentTemplate {
 
         return order;
     }
-
-    /*
-    public ResolveResult[] getResolveList() {
-        return new ResolveResult[0];
-    }
-    */
 }

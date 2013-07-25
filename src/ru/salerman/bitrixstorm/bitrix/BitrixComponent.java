@@ -25,6 +25,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.PsiNavigateUtil;
 
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -33,53 +34,38 @@ import java.util.List;
  * @date: 20.05.13
  */
 public class BitrixComponent {
-    private Project project;
     private String namespace;
-    private String component;
-    private String templateName;
-    private BitrixComponentTemplate template;
-    private List<BitrixComponentTemplate> arTemplates;
-    private List<BitrixComponentParameter> arParams;
+    private String name;
+	private String templateName;
+    private Hashtable<String, BitrixComponentTemplate> templatesList;
+	private boolean isComplex = false;
 
-    public BitrixComponent(Project project, String namespace, String component, String templateName) {
-        this.project = project;
-        this.component = component;
-        this.namespace = namespace;
-        this.templateName = templateName;
-
-        if (isComplex()) {
-            this.template = new BitrixComplexComponentTemplate(this);
-        } else {
-            this.template = new BitrixComponentTemplate(this);
-        }
-    }
+	public BitrixComponent(String namespace, String component) {
+		this.name = component;
+		this.namespace = namespace;
+		this.isComplex = isComplex();
+		this.templatesList = new BitrixComponentTemplatesManager(this.namespace, this.name).getTemplates();
+	}
 
     public String getNamespace () {
         return this.namespace;
     }
 
     public String getName () {
-        return this.component;
+        return this.name;
     }
 
-    public String getTemplateName () {
-        return this.templateName;
+    public BitrixComponentTemplate getTemplate (String templateName) {
+        return this.templatesList.get(templateName);
     }
 
-    public BitrixComponentTemplate getTemplate () {
-        return this.template;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public static BitrixComponent initComponentFromString (String includeComponentString) {
-        Project prj = BitrixUtils.getProject();
-        String namespace = getComponentNamespaceFromString(includeComponentString);
-        String component = getComponentNameFromString(includeComponentString);
-        String template = getComponentTemplateFromString(includeComponentString);
-        return new BitrixComponent(prj, namespace, component, template);
+    public static Hashtable<String, String> parseComponentFromString (String includeComponentString) {
+	    Hashtable<String, String> componentVars = new Hashtable<String, String>();
+	    componentVars.put("namespace", getComponentNamespaceFromString(includeComponentString));
+	    componentVars.put("component", getComponentNameFromString(includeComponentString));
+	    componentVars.put("template", getComponentTemplateFromString(includeComponentString));
+	    componentVars.put("hash", componentVars.get("namespace") + ":" + componentVars.get("component"));
+        return componentVars;
     }
 
     /**
@@ -87,12 +73,12 @@ public class BitrixComponent {
      *
      * @return
      */
-    public PsiElement findComponentSrc() {
+    public PsiElement findComponentSrc(Project project) {
         PsiFile cmp;
         String[] order = getComponentSrcPath();
 
         for (String path : order) {
-            cmp = BitrixUtils.getPsiFileByPath(project, path);
+            cmp = BitrixUtils.getPsiFileByPath(path);
             if (cmp != null) {
                 return cmp;
             }
@@ -103,9 +89,9 @@ public class BitrixComponent {
 
     public boolean isComplex() {
         String sep = BitrixSiteTemplate.sep;
-        String[] templatesList = BitrixComponentTemplate.getComponentTemplatesPathOrder(this.namespace, this.component, this.templateName, this.project);
+        String[] templatesList = BitrixComponentTemplate.getComponentTemplatesPathOrder(this.namespace, this.name, ".default");
         for (String path : templatesList) {
-            PsiFile templateFile = BitrixUtils.getPsiFileByPath(this.project, path);
+            PsiFile templateFile = BitrixUtils.getPsiFileByPath(path);
             if (templateFile != null) {
                 return false;
             }
@@ -160,19 +146,20 @@ public class BitrixComponent {
     }
 
     private String[] getComponentSrcPath() {
+	    Project project = BitrixUtils.getProject();
         String[] order = new String[2];
         String sep = BitrixUtils.getEscapedSeparator();
         order[0]    = project.getBasePath()
                 + sep + "bitrix"
                 + sep + "components"
-                + sep + namespace
-                + sep + component
+                + sep + this.namespace
+                + sep + this.name
                 + sep + "component.php";
         order[1]    = project.getBasePath()
                 + sep + "bitrix"
                 + sep + "components"
-                + sep + namespace
-                + sep + component
+                + sep + this.namespace
+                + sep + this.name
                 + sep + "class.php";
         return order;
     }

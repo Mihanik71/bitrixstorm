@@ -31,19 +31,28 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.salerman.bitrixstorm.bitrix.BitrixComponent;
+import ru.salerman.bitrixstorm.bitrix.BitrixComponentManager;
+import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
+
+import java.util.Hashtable;
 
 public class GoToComponentSrcReference implements PsiReference {
 
+	private Project project;
     private String componentString;
     private PsiElement psiElement;
     private TextRange textRange;
     private BitrixComponent component;
+	private Hashtable<String, String> componentVars;
 
     public GoToComponentSrcReference(final PsiElement psiElement, Project project) {
+	    BitrixUtils.setProject(project);
+	    this.project = project;
         this.psiElement = psiElement;
         this.componentString = psiElement.getText();
 
-        this.component = BitrixComponent.initComponentFromString(componentString);
+	    this.componentVars = BitrixComponent.parseComponentFromString(componentString);
+	    this.component = BitrixComponentManager.getInstance(project).getComponent(this.componentVars.get("hash"));
 
         int start = this.componentString.indexOf(this.component.getName());
         int stop = start + this.component.getName().length();
@@ -64,7 +73,8 @@ public class GoToComponentSrcReference implements PsiReference {
     @Nullable
     @Override
     public PsiElement resolve() {
-        return component.findComponentSrc();
+	    BitrixUtils.setProject(this.project);
+        return component.findComponentSrc(this.project);
     }
 
     @NotNull

@@ -45,6 +45,7 @@ public class GoToSiteTemplateHeaderReference implements PsiReference {
         this.psiElement = psiElement;
         this.templateString = psiElement.getText();
         this.project = project;
+	    BitrixUtils.setProject(this.project);
 
         this.textRange = new TextRange(7, this.templateString.length() - 1);
     }
@@ -62,7 +63,8 @@ public class GoToSiteTemplateHeaderReference implements PsiReference {
     @Nullable
     @Override
     public PsiElement resolve() {
-        return BitrixUtils.getPsiFileByPath(this.project, BitrixSiteTemplate.getInstance(this.project).getPathToHeader());
+	    BitrixUtils.setProject(this.project);
+        return BitrixUtils.getPsiFileByPath(BitrixSiteTemplate.getInstance(this.project).getPathToHeader());
     }
 
     @NotNull

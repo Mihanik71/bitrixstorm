@@ -1,4 +1,6 @@
-package ru.salerman.bitrixstorm.bitrix;/*
+package ru.salerman.bitrixstorm.bitrix;
+
+/**
  * Copyright 2011-2013 Salerman <www.salerman.ru>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +15,16 @@ package ru.salerman.bitrixstorm.bitrix;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+public class BitrixEntityCodeTemplate {
+	private String codeTpl;
 
-/**
- * @author Mikhail Medvedev aka r3c130n <mm@salerman.ru>
- * @link http://www.salerman.ru/
- * @date: 20.05.13
- */
-public class BitrixComponentParameter {
-    public String name, code, type, value, values, def;
+	BitrixEntityCodeTemplate (String type, String tpl) {
+		// TODO: реализовать
+		String codePath = "/bitrixstorm/code/" + type + "/" + tpl + ".tpl";
+		this.codeTpl = "";//file_get_contents(codePath) + "\r\n\r\n";
+	}
+
+	public String getCode() {
+		return this.codeTpl;
+	}
 }

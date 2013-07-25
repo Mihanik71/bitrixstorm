@@ -114,7 +114,5 @@
 			  implementation="ru.salerman.bitrixstorm.includes.GoToIncludeFileReferenceContributor"/>
 	  <psi.referenceContributor
 			  implementation="ru.salerman.bitrixstorm.components.GoToComponentSrcReferenceContributor"/>
-	  <psi.referenceContributor
-			  implementation="ru.salerman.bitrixstorm.components.GoToTemplateOfComplexComponentReferenceContributor"/>
   </extensions>
 </idea-plugin>
