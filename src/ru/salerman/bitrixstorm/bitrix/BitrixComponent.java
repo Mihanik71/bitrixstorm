@@ -39,15 +39,43 @@ public class BitrixComponent {
 	private String templateName;
     private Hashtable<String, BitrixComponentTemplate> templatesList;
 	private boolean isComplex = false;
+	private PsiElement componentPsiFile;
+	private VirtualFile componentDirectory;
+	private VirtualFile componentFile;
 
 	public BitrixComponent(String namespace, String component) {
 		this.name = component;
 		this.namespace = namespace;
 		this.isComplex = isComplex();
 		this.templatesList = new BitrixComponentTemplatesManager(this.namespace, this.name).getTemplates();
+		this.componentPsiFile = this.findComponentSrc();
+		this.componentFile = this.findComponentFile();
+		this.componentDirectory = this.findComponentDirectory();
 	}
 
-    public String getNamespace () {
+	private VirtualFile findComponentFile() {
+		if (this.componentPsiFile == null) return null;
+		return this.componentPsiFile.getContainingFile().getVirtualFile();
+	}
+
+	private VirtualFile findComponentDirectory() {
+		if (this.componentPsiFile == null) return null;
+		return this.componentPsiFile.getContainingFile().getContainingDirectory().getVirtualFile();
+	}
+
+	public PsiElement toPsiElement() {
+		return this.componentPsiFile;
+	}
+
+	public VirtualFile getComponentDirectory() {
+		return this.componentDirectory;
+	}
+
+	public VirtualFile getComponentFile() {
+		return this.componentFile;
+	}
+
+	public String getNamespace () {
         return this.namespace;
     }
 
@@ -73,7 +101,7 @@ public class BitrixComponent {
      *
      * @return
      */
-    public PsiElement findComponentSrc(Project project) {
+    private PsiElement findComponentSrc() {
         PsiFile cmp;
         String[] order = getComponentSrcPath();
 

@@ -74,7 +74,7 @@ public class GoToComponentSrcReference implements PsiReference {
     @Override
     public PsiElement resolve() {
 	    BitrixUtils.setProject(this.project);
-        return component.findComponentSrc(this.project);
+        return component.toPsiElement();
     }
 
     @NotNull
