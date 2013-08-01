@@ -33,6 +33,11 @@ public class BitrixComponentManager {
 		this.fillComponents();
 	}
 
+	public void refresh() {
+		this.componentsList = new Hashtable<String, BitrixComponent>();
+		this.fillComponents();
+	}
+
 	public static BitrixComponentManager getInstance (@NotNull Project project) {
 		String hash = project.getLocationHash();
 
@@ -58,7 +63,7 @@ public class BitrixComponentManager {
 	}
 
 	private void fillComponents() {
-		String componentsPath = this.project.getBasePath() + "/bitrix/components";
+		String componentsPath = BitrixSiteTemplate.getInstance(this.project).BITRIX_ROOT + BitrixUtils.getEscapedSeparator() + "components";
 		try {
 			VirtualFile directory = LocalFileSystem.getInstance().findFileByPath(componentsPath);
 			if (directory != null && directory.isDirectory()) {

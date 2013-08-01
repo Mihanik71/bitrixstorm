@@ -32,6 +32,7 @@ import com.intellij.openapi.util.SystemInfo;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
+import ru.salerman.bitrixstorm.bitrix.BitrixComponentManager;
 import ru.salerman.bitrixstorm.bitrix.BitrixConfig;
 import ru.salerman.bitrixstorm.bitrix.BitrixSiteTemplate;
 import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
@@ -49,8 +50,8 @@ public class Config implements Configurable {
 
     private String curSiteTemplateFromSettings = ".default";
     private String curSiteTemplateValue = ".default";
-    private String curBitrixPathFromSettings = "/bitrix";
-    private String curBitrixPathValue = "/bitrix";
+    private String curBitrixPathFromSettings = "bitrix";
+    private String curBitrixPathValue = "bitrix";
     private JComponent myComponent;
     private JComboBox siteTemplateName;
     private JPanel myPanel;
@@ -112,6 +113,8 @@ public class Config implements Configurable {
             refreshTemplatesList();
         } catch (NullPointerException npe) {
 
+        } catch (IllegalStateException ise) {
+
         }
 
         myComponent = (JComponent) myPanel;
@@ -167,6 +170,7 @@ public class Config implements Configurable {
                 BitrixSettings.setValue(BitrixConfig.BITRIX_SITE_TEMPLATE, curSiteTemplateValue);
                 BitrixSettings.setValue(BitrixConfig.BITRIX_ROOT_PATH, curBitrixPathValue);
                 BitrixSiteTemplate.getInstance(project).refreshRootPath();
+	            BitrixComponentManager.getInstance(project).refresh();
             }
         } catch (NullPointerException npe) {
 
@@ -186,7 +190,7 @@ public class Config implements Configurable {
     private void getBitrixStormSettings() {
         BitrixSettings = PropertiesComponent.getInstance(project);
         curSiteTemplateFromSettings = BitrixSettings.getValue(BitrixConfig.BITRIX_SITE_TEMPLATE, ".default");
-        curBitrixPathFromSettings = BitrixSettings.getValue(BitrixConfig.BITRIX_ROOT_PATH, "/bitrix");
+        curBitrixPathFromSettings = BitrixSettings.getValue(BitrixConfig.BITRIX_ROOT_PATH, "bitrix");
     }
 
     private void getCurrentValues() {

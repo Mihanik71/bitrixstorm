@@ -42,6 +42,7 @@ public class BitrixComponent {
 	private PsiElement componentPsiFile;
 	private VirtualFile componentDirectory;
 	private VirtualFile componentFile;
+	private BitrixComponentTemplate insideComplexComponentTemplate = null;
 
 	public BitrixComponent(String namespace, String component) {
 		this.name = component;
@@ -60,7 +61,11 @@ public class BitrixComponent {
 
 	private VirtualFile findComponentDirectory() {
 		if (this.componentPsiFile == null) return null;
-		return this.componentPsiFile.getContainingFile().getContainingDirectory().getVirtualFile();
+		try {
+			return this.componentPsiFile.getContainingFile().getContainingDirectory().getVirtualFile();
+		} catch (NullPointerException npe) {
+			return null;
+		}
 	}
 
 	public PsiElement toPsiElement() {
@@ -84,6 +89,16 @@ public class BitrixComponent {
     }
 
     public BitrixComponentTemplate getTemplate (String templateName) {
+	    if (templateName.isEmpty()) {
+		    templateName = ".default";
+	    }
+
+	    if (this.insideComplexComponentTemplate != null) {
+		    BitrixComponentTemplate tmp = this.insideComplexComponentTemplate;
+		    this.insideComplexComponentTemplate = null;
+		    return tmp;
+	    }
+
         return this.templatesList.get(templateName);
     }
 
@@ -118,6 +133,14 @@ public class BitrixComponent {
     public boolean isComplex() {
         String sep = BitrixSiteTemplate.sep;
         String[] templatesList = BitrixComponentTemplate.getComponentTemplatesPathOrder(this.namespace, this.name, ".default");
+
+	    if (templatesList.length == 4) {
+		    PsiFile templateFile = BitrixUtils.getPsiFileByPath(templatesList[0]);
+			if (templateFile != null) {
+				this.insideComplexComponentTemplate = new BitrixComponentTemplate(".default", templateFile.getContainingDirectory().getVirtualFile());
+			}
+	    }
+
         for (String path : templatesList) {
             PsiFile templateFile = BitrixUtils.getPsiFileByPath(path);
             if (templateFile != null) {
@@ -144,9 +167,13 @@ public class BitrixComponent {
         String[] pathElements = cleanString.split(":");
         if (pathElements == null) return null;
 
-        String[] cmptpl = pathElements[1].split(",");
-        if (cmptpl == null) return null;
-        return cmptpl[0];
+	    if (pathElements.length > 0) {
+	        String[] cmptpl = pathElements[1].split(",");
+	        if (cmptpl == null) return null;
+	        return cmptpl[0];
+	    } else {
+		    return null;
+	    }
     }
 
     public static String getComponentTemplateFromString (String string) {
@@ -157,14 +184,18 @@ public class BitrixComponent {
         String[] pathElements = cleanString.split(":");
         if (pathElements == null) return null;
 
-        String[] cmptpl = pathElements[1].split(",");
-        if (cmptpl == null) return null;
+	    if (pathElements.length > 0) {
+	        String[] cmptpl = pathElements[1].split(",");
+	        if (cmptpl == null) return null;
 
-        if (cmptpl.length == 2) {
-            return cmptpl[1];
-        } else {
-            return "";
-        }
+	        if (cmptpl.length == 2) {
+	            return cmptpl[1];
+	        } else {
+	            return "";
+	        }
+	    } else {
+		    return null;
+	    }
     }
 
     private static String clearIncludeComponentString (String string) {
@@ -177,14 +208,12 @@ public class BitrixComponent {
 	    Project project = BitrixUtils.getProject();
         String[] order = new String[2];
         String sep = BitrixUtils.getEscapedSeparator();
-        order[0]    = project.getBasePath()
-                + sep + "bitrix"
+        order[0]    = BitrixSiteTemplate.getInstance(project).BITRIX_ROOT
                 + sep + "components"
                 + sep + this.namespace
                 + sep + this.name
                 + sep + "component.php";
-        order[1]    = project.getBasePath()
-                + sep + "bitrix"
+        order[1]    = BitrixSiteTemplate.getInstance(project).BITRIX_ROOT_PATH
                 + sep + "components"
                 + sep + this.namespace
                 + sep + this.name

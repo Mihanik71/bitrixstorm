@@ -54,6 +54,8 @@ public class GoToComponentSrcReference implements PsiReference {
 	    this.componentVars = BitrixComponent.parseComponentFromString(componentString);
 	    this.component = BitrixComponentManager.getInstance(project).getComponent(this.componentVars.get("hash"));
 
+	    if (this.component == null) return;
+
         int start = this.componentString.indexOf(this.component.getName());
         int stop = start + this.component.getName().length();
 
@@ -74,6 +76,7 @@ public class GoToComponentSrcReference implements PsiReference {
     @Override
     public PsiElement resolve() {
 	    BitrixUtils.setProject(this.project);
+	    if (component == null) return null;
         return component.toPsiElement();
     }
 

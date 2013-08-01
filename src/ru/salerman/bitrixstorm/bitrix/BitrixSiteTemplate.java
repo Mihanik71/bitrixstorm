@@ -14,10 +14,12 @@ import java.util.Hashtable;
 import static java.io.File.separator;
 
 public class BitrixSiteTemplate {
-    public static String BITRIX_SITE_TEMPLATES_PATH,
+    public String BITRIX_SITE_TEMPLATES_PATH,
                          BITRIX_SITE_TEMPLATES_PATH_ESCAPED,
                          BITRIX_ROOT_PATH,
-                         BITRIX_ROOT_PATH_ESCAPED;
+                         BITRIX_ROOT_PATH_ESCAPED,
+						 BITRIX_ROOT,
+		                 BITRIX_ROOT_ESCAPED;
 
     private String templateName = null;
     public static String sep = BitrixUtils.getEscapedSeparator();
@@ -33,10 +35,15 @@ public class BitrixSiteTemplate {
     }
 
     public void refreshRootPath() {
-        BITRIX_ROOT_PATH = BitrixSettings.getValue(BitrixConfig.BITRIX_ROOT_PATH, "/bitrix");
-        BITRIX_ROOT_PATH_ESCAPED = BITRIX_ROOT_PATH.replace("/", sep);
-        BITRIX_SITE_TEMPLATES_PATH = BITRIX_ROOT_PATH + separator + "templates" + separator;
-        BITRIX_SITE_TEMPLATES_PATH_ESCAPED = BITRIX_ROOT_PATH_ESCAPED + sep + "templates" + sep;
+        this.BITRIX_ROOT_PATH = BitrixSettings.getValue(BitrixConfig.BITRIX_ROOT_PATH, "bitrix");
+	    this.BITRIX_ROOT_PATH_ESCAPED = sep + this.BITRIX_ROOT_PATH.replace("/", sep);
+	    this.BITRIX_SITE_TEMPLATES_PATH = separator + this.BITRIX_ROOT_PATH + separator + "templates" + separator;
+	    this.BITRIX_SITE_TEMPLATES_PATH_ESCAPED = this.BITRIX_ROOT_PATH_ESCAPED + sep + "templates" + sep;
+	    this.BITRIX_ROOT = this.project.getBasePath() + separator + this.BITRIX_ROOT_PATH;
+	    this.BITRIX_ROOT_ESCAPED = this.BITRIX_ROOT.replace("/", sep);
+
+	    this.BitrixSettings = PropertiesComponent.getInstance(this.project);
+	    this.templateName = this.BitrixSettings.getValue(BitrixConfig.BITRIX_SITE_TEMPLATE, ".default");
     }
 
     public static BitrixSiteTemplate getInstance (@NotNull Project project) {

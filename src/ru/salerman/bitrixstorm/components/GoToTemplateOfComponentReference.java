@@ -94,6 +94,7 @@ public class GoToTemplateOfComponentReference implements PsiReference {
     @Override
     public PsiElement resolve() {
 	    BitrixUtils.setProject(this.project);
+	    if (this.component == null) return null;
 	    if(this.component.isComplex()) {
 		    return component.getTemplate(this.componentVars.get("template")).toPsiDirectory();
 	    } else {

@@ -27,13 +27,14 @@ public class BitrixComponentTemplatesManager {
 
 	BitrixComponentTemplatesManager (String namespace, String componentName) {
 		Project project = BitrixUtils.getProject();
-		String rootPath = project.getBasePath() + "/bitrix/";
+		String sep = BitrixUtils.getEscapedSeparator();
+		String rootPath = BitrixSiteTemplate.getInstance(project).BITRIX_ROOT;
 
 		this.pathToTemplates = new String[3];
 
-		this.pathToTemplates[0] = rootPath + "/components/" + namespace + "/" + componentName + "/templates";
-		this.pathToTemplates[1] = rootPath + "/templates/.default/components/" + namespace + "/" + componentName;
-		this.pathToTemplates[2] = rootPath + "/templates/" + BitrixSiteTemplate.getInstance(project).getName() + "/components/" + namespace + "/" + componentName;
+		this.pathToTemplates[0] = rootPath + sep + "components" + sep + namespace + sep + componentName + sep +"templates";
+		this.pathToTemplates[1] = rootPath + sep + "templates" + sep + ".default" + sep + "components" + sep + namespace + sep + componentName;
+		this.pathToTemplates[2] = rootPath + sep + "templates" + sep + BitrixSiteTemplate.getInstance(project).getName() + sep + "components" + sep + namespace + sep + componentName;
 	}
 
 	public Hashtable<String, BitrixComponentTemplate> getTemplates () {

@@ -114,7 +114,7 @@ public class BitrixUtils {
         }
 
         if (!path.startsWith("/")) {
-            path = BitrixSiteTemplate.BITRIX_SITE_TEMPLATES_PATH + BitrixSiteTemplate.getInstance(project).getName() + sep + path;
+            path = BitrixSiteTemplate.getInstance(project).BITRIX_SITE_TEMPLATES_PATH + BitrixSiteTemplate.getInstance(project).getName() + sep + path;
         }
         return getPsiFileByPath(project.getBasePath() + path);
     }
@@ -136,7 +136,9 @@ public class BitrixUtils {
             }
         } catch (NullPointerException npe) {
             return null;
-        }
+        } catch (IllegalStateException ise) {
+		    return null;
+	    }
 
         return null;
     }

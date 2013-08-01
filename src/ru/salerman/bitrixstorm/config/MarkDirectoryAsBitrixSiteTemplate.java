@@ -28,6 +28,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import ru.salerman.bitrixstorm.bitrix.BitrixComponentManager;
 import ru.salerman.bitrixstorm.bitrix.BitrixSiteTemplate;
 import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
 
@@ -39,6 +40,8 @@ public class MarkDirectoryAsBitrixSiteTemplate extends AnAction {
         String siteTemplate = BitrixSiteTemplate.getInstance(e.getProject()).getSiteTemplate(path);
 
         BitrixSiteTemplate.getInstance(e.getProject()).setName(siteTemplate);
+
+	    BitrixComponentManager.getInstance(e.getProject()).refresh();
 
         Messages.showMessageDialog("\"" + siteTemplate + "\" was marked as Bitrix Site Template ", "Information", Messages.getInformationIcon());
     }

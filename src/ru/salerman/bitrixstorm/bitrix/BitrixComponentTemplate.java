@@ -28,7 +28,7 @@ import static java.io.File.separator;
  * @date: 20.05.13
  */
 public class BitrixComponentTemplate {
-    public String templateName, path;
+    public String templateName;
 	private Hashtable<String, BitrixEntity> templateEntities = new Hashtable<String, BitrixEntity>();
 
 	protected PsiElement psiTemplateFile = null;
@@ -36,18 +36,19 @@ public class BitrixComponentTemplate {
 	private VirtualFile templateDirectory;
 
 	public BitrixComponentTemplate (String templateName, VirtualFile templateDirectory) {
+		String sep = BitrixSiteTemplate.sep;
 		this.templateDirectory = templateDirectory;
 		this.templateName = templateName;
 		String templatePath = templateDirectory.getPath();
-		this.psiTemplateFile = BitrixUtils.getPsiFileByPath (templatePath + "/template.php");
+		this.psiTemplateFile = BitrixUtils.getPsiFileByPath (templatePath + sep + "template.php");
 		this.psiTemplateDirectory = BitrixUtils.getPsiDirByPath(templatePath);
 
-		this.templateEntities.put("template", new BitrixEntity(templatePath + "/template.php"));
-		this.templateEntities.put("parameters", new BitrixEntity(templatePath + "/.parameters.php"));
-		this.templateEntities.put("result_modifier", new BitrixEntity(templatePath + "/result_modifier.php"));
-		this.templateEntities.put("component_epilog", new BitrixEntity(templatePath + "/component_epilog.php"));
-		this.templateEntities.put("style", new BitrixEntity(templatePath + "/style.css"));
-		this.templateEntities.put("script", new BitrixEntity(templatePath + "/script.js"));
+		this.templateEntities.put("template", new BitrixEntity(templatePath + sep + "template.php"));
+		this.templateEntities.put("parameters", new BitrixEntity(templatePath + sep + ".parameters.php"));
+		this.templateEntities.put("result_modifier", new BitrixEntity(templatePath + sep + "result_modifier.php"));
+		this.templateEntities.put("component_epilog", new BitrixEntity(templatePath + sep + "component_epilog.php"));
+		this.templateEntities.put("style", new BitrixEntity(templatePath + sep + "style.css"));
+		this.templateEntities.put("script", new BitrixEntity(templatePath + sep + "script.js"));
 	}
 
 
@@ -129,8 +130,7 @@ public class BitrixComponentTemplate {
                 + sep + templateName
                 + sep + "template.php";
 
-        order[i++]    = project.getBasePath()
-                + BitrixSiteTemplate.getInstance(project).BITRIX_ROOT_PATH
+        order[i++]    = BitrixSiteTemplate.getInstance(project).BITRIX_ROOT
                 + sep + "components"
                 + sep + componentNameSpace
                 + sep + componentName
