@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.salerman.bitrixstorm.bitrix.BitrixComponent;
 import ru.salerman.bitrixstorm.bitrix.BitrixComponentManager;
+import ru.salerman.bitrixstorm.bitrix.BitrixComponentTemplate;
 import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
 
 import java.util.Hashtable;
@@ -93,12 +94,18 @@ public class GoToTemplateOfComponentReference implements PsiReference {
     @Nullable
     @Override
     public PsiElement resolve() {
-	    BitrixUtils.setProject(this.project);
-	    if (this.component == null) return null;
-	    if(this.component.isComplex()) {
-		    return component.getTemplate(this.componentVars.get("template")).toPsiDirectory();
-	    } else {
-		    return component.getTemplate(this.componentVars.get("template")).toPsiFile();
+	    try {
+		    BitrixUtils.setProject(this.project);
+		    if (this.component == null) return null;
+		    BitrixComponentTemplate tpl = component.getTemplate(this.componentVars.get("template"));
+		    if (tpl == null) return null;
+		    if(this.component.isComplex()) {
+			    return tpl.toPsiDirectory();
+		    } else {
+			    return tpl.toPsiFile();
+		    }
+	    } catch (NullPointerException npe) {
+		    return null;
 	    }
     }
 
