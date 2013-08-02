@@ -36,6 +36,11 @@ public class BitrixSiteTemplate {
 
     public void refreshRootPath() {
         this.BITRIX_ROOT_PATH = BitrixSettings.getValue(BitrixConfig.BITRIX_ROOT_PATH, "bitrix");
+
+	    if (this.BITRIX_ROOT_PATH.startsWith("/") || this.BITRIX_ROOT_PATH.startsWith("\\")) {
+		    this.BITRIX_ROOT_PATH = this.BITRIX_ROOT_PATH.substring(1, this.BITRIX_ROOT_PATH.length());
+	    }
+
 	    this.BITRIX_ROOT_PATH_ESCAPED = sep + this.BITRIX_ROOT_PATH.replace("/", sep);
 	    this.BITRIX_SITE_TEMPLATES_PATH = separator + this.BITRIX_ROOT_PATH + separator + "templates" + separator;
 	    this.BITRIX_SITE_TEMPLATES_PATH_ESCAPED = this.BITRIX_ROOT_PATH_ESCAPED + sep + "templates" + sep;

@@ -165,12 +165,18 @@ public class Config implements Configurable {
             getBitrixStormSettings();
             getCurrentValues();
 
+	        if (curBitrixPathValue.startsWith("/") || curBitrixPathValue.startsWith("\\")) {
+		        curBitrixPathValue = curBitrixPathValue.substring(1, curBitrixPathValue.length());
+		        pathToBitrixFolder.setText(curBitrixPathValue);
+	        }
+
             if (!curSiteTemplateValue.contentEquals(curSiteTemplateFromSettings) || !curBitrixPathFromSettings.contentEquals(curBitrixPathValue)) {
                 BitrixSettings = PropertiesComponent.getInstance(project);
                 BitrixSettings.setValue(BitrixConfig.BITRIX_SITE_TEMPLATE, curSiteTemplateValue);
                 BitrixSettings.setValue(BitrixConfig.BITRIX_ROOT_PATH, curBitrixPathValue);
                 BitrixSiteTemplate.getInstance(project).refreshRootPath();
 	            BitrixComponentManager.getInstance(project).refresh();
+	            refreshTemplatesList();
             }
         } catch (NullPointerException npe) {
 
