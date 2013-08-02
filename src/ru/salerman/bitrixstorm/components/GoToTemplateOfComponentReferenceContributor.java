@@ -32,7 +32,7 @@ import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 public class GoToTemplateOfComponentReferenceContributor extends PsiReferenceContributor {
     @Override
     public void registerReferenceProviders(PsiReferenceRegistrar psiReferenceRegistrar) {
-        final String regexp = "\"[a-z\\.\\_]*\"";
+        final String regexp = "\"[a-z\\.\\_\\-]*\"";
 
         PsiElementPattern.Capture<StringLiteralExpression> psiElementCapture = PlatformPatterns.psiElement(
         StringLiteralExpression.class).withText(StandardPatterns.string().matches(regexp));
