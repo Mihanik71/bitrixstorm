@@ -1,4 +1,4 @@
-# [BitrixStorm v0.2.6beta](http://salerman.github.io/phpstorm)
+# [BitrixStorm v0.2.6](http://salerman.github.io/phpstorm)
 
 BitrixStorm is a perfect toolkit for faster and easier web development on <a href="www.1c-bitrix.ru">1C-Bitrix</a> PHP CMF by using best PHP IDE - JetBrains PhpStorm, created by [Mikhail Medvedev](http://twitter.com/r3c130n).
 
