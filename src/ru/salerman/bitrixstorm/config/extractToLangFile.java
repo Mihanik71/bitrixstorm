@@ -33,7 +33,9 @@ import ru.salerman.bitrixstorm.bitrix.BitrixUtils;
  */
 public class extractToLangFile extends AnAction {
     public void actionPerformed(AnActionEvent e) {
-        VirtualFile file = (VirtualFile) e.getDataContext().getData(DataConstants.VIRTUAL_FILE);
+        DataContext dataContext = e.getDataContext();
+        VirtualFile file = (VirtualFile) LangDataKeys.PSI_ELEMENT.getData(dataContext).getContext();
+        //VirtualFile file = (VirtualFile) e.getDataContext().getData(DataConstants.VIRTUAL_FILE);
 
         PsiFile path = BitrixUtils.getPsiFileByPath(file.getPath());
 

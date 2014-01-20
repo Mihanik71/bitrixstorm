@@ -23,14 +23,10 @@
 package ru.salerman.bitrixstorm.config;
 
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.openapi.application.ImportOldConfigsPanel;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.util.SystemInfo;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 import ru.salerman.bitrixstorm.bitrix.BitrixComponentManager;
 import ru.salerman.bitrixstorm.bitrix.BitrixConfig;
@@ -41,8 +37,6 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -112,12 +106,12 @@ public class Config implements Configurable {
 
             refreshTemplatesList();
         } catch (NullPointerException npe) {
-
+            System.err.println("Error: " + npe.getMessage());
         } catch (IllegalStateException ise) {
-
+            System.err.println("Error: " + ise.getMessage());
         }
 
-        myComponent = (JComponent) myPanel;
+        myComponent = myPanel;
         return myComponent;
     }
 
@@ -125,7 +119,7 @@ public class Config implements Configurable {
         try {
             tpls = BitrixSiteTemplate.getInstance(project).getTemplatesList().keySet();
 
-            if (tpls != null && !tpls.isEmpty()) {
+            if (!tpls.isEmpty()) {
                 siteTemplateName.setEnabled(true);
                 Iterator it = tpls.iterator();
                 int i = 0;
@@ -150,10 +144,7 @@ public class Config implements Configurable {
             getBitrixStormSettings();
             getCurrentValues();
 
-            if (curSiteTemplateValue.contentEquals(curSiteTemplateFromSettings) && curBitrixPathFromSettings.contentEquals(curBitrixPathValue)) {
-                return false;
-            }
-            return true;
+            return !(curSiteTemplateValue.contentEquals(curSiteTemplateFromSettings) && curBitrixPathFromSettings.contentEquals(curBitrixPathValue));
         } catch (NullPointerException npe) {
             return false;
         }
@@ -179,7 +170,7 @@ public class Config implements Configurable {
 	            refreshTemplatesList();
             }
         } catch (NullPointerException npe) {
-
+            System.err.println("Error: " + npe.getMessage());
         }
     }
 
