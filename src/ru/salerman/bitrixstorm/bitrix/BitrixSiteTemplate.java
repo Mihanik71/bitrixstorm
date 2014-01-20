@@ -29,7 +29,7 @@ public class BitrixSiteTemplate {
     private PropertiesComponent BitrixSettings;
 
     private BitrixSiteTemplate(@NotNull Project prj) {
-        this.project = prj;
+        this.project = BitrixUtils.getProject();
         this.templateName = getName();
         refreshRootPath();
     }
@@ -52,7 +52,7 @@ public class BitrixSiteTemplate {
     }
 
     public static BitrixSiteTemplate getInstance (@NotNull Project project) {
-	    String hash = project.getLocationHash();
+	    String hash = BitrixUtils.getProject().getLocationHash();
 
 	    if (instancesList == null) {
 		    instancesList = new Hashtable<String, BitrixSiteTemplate>();
@@ -79,11 +79,19 @@ public class BitrixSiteTemplate {
     }
 
     public String getPathToHeader() {
-        return this.project.getBasePath() + BITRIX_SITE_TEMPLATES_PATH + this.templateName + sep + "header.php";
+        if (this.project.getBaseDir().findChild("local").exists() && this.project.getBaseDir().findChild("local").findChild("templates").exists()) {
+            return this.project.getBasePath() + sep + "local" + sep + "templates" + sep + this.templateName + sep + "header.php";
+        } else {
+            return this.project.getBasePath() + BITRIX_SITE_TEMPLATES_PATH + this.templateName + sep + "header.php";
+        }
     }
 
     public String getPathToFooter() {
-        return this.project.getBasePath() + BITRIX_SITE_TEMPLATES_PATH + this.templateName + sep + "footer.php";
+        if (this.project.getBaseDir().findChild("local").exists() && this.project.getBaseDir().findChild("local").findChild("templates").exists()) {
+            return this.project.getBasePath() + sep + "local" + sep + "templates" + sep + this.templateName + sep + "footer.php";
+        } else {
+            return this.project.getBasePath() + BITRIX_SITE_TEMPLATES_PATH + this.templateName + sep + "footer.php";
+        }
     }
 
     public String getSiteTemplate (@NotNull PsiElement path) {
@@ -91,6 +99,11 @@ public class BitrixSiteTemplate {
         if (pathToTpl.contains(BITRIX_SITE_TEMPLATES_PATH)) {
             String[] split = pathToTpl.split(BITRIX_SITE_TEMPLATES_PATH_ESCAPED);
             if (!split[1].contains(sep)) {
+                return split[1];
+            }
+        } else if (pathToTpl != null && pathToTpl.contains(path.getProject().getBasePath() + sep + "local" + sep)) {
+            String[] split = pathToTpl.split(sep + "local" + sep + "templates" + sep);
+            if (split != null && !split[1].contains(sep)) {
                 return split[1];
             }
         }
@@ -104,6 +117,11 @@ public class BitrixSiteTemplate {
             if (split != null && !split[1].contains(sep)) {
                 return true;
             }
+        } else if (pathToTpl != null && pathToTpl.contains(path.getProject().getBasePath() + sep + "local" + sep)) {
+            String[] split = pathToTpl.split(sep + "local" + sep + "templates" + sep);
+            if (split != null && !split[1].contains(sep)) {
+                return true;
+            }
         }
         return false;
     }
@@ -112,16 +130,18 @@ public class BitrixSiteTemplate {
         Hashtable<String, String> templates = new Hashtable<String, String>();
 
         try {
-            VirtualFile baseDir = this.project.getBaseDir();
+            PsiElement[] childrenLocal = null;
+            VirtualFile baseDir = null;
+            VirtualFile projectDir = this.project.getBaseDir();
             if (BITRIX_ROOT_PATH == sep + "bitrix") {
-                baseDir = baseDir.findChild("bitrix").findChild("templates");
+                baseDir = projectDir.findChild("bitrix").findChild("templates");
             } else {
                 String[] dirs = BITRIX_ROOT_PATH_ESCAPED.split(sep);
                 if (dirs != null) {
                     for (int i = 0; i < dirs.length; i++) {
                         if (dirs[i] != null && !dirs[i].contentEquals("")) {
                             String dir = dirs[i];
-                            baseDir = baseDir.findChild(dir);
+                            baseDir = projectDir.findChild(dir);
                         }
                     }
                     baseDir = baseDir.findChild("templates");
@@ -133,6 +153,11 @@ public class BitrixSiteTemplate {
             PsiDirectory directory = PsiManager.getInstance(this.project).findDirectory(baseDir);
             PsiElement[] children = directory.getChildren();
 
+            if (projectDir.findChild("local").exists() && projectDir.findChild("local").findChild("templates").exists()) {
+                PsiDirectory localDirectory = PsiManager.getInstance(this.project).findDirectory(projectDir.findChild("local").findChild("templates"));
+                childrenLocal = localDirectory.getChildren();
+            }
+
             for (int i = 0; i < children.length; i++) {
                 templates.put(
                         BitrixUtils.getFileNameByPsiElement(children[i]),
@@ -140,6 +165,14 @@ public class BitrixSiteTemplate {
                 );
             }
 
+            if (childrenLocal != null) {
+                for (int i = 0; i < childrenLocal.length; i++) {
+                    templates.put(
+                            BitrixUtils.getFileNameByPsiElement(childrenLocal[i]),
+                            BitrixUtils.getPathByPsiElement(childrenLocal[i])
+                    );
+                }
+            }
 
         } catch (NullPointerException ex) {
             return null;

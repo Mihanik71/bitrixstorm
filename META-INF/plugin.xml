@@ -105,6 +105,9 @@
 
   <project-components>
     <!-- Add your project components here -->
+      <component>
+          <implementation-class>ru.salerman.bitrixstorm.BitrixStormProjectComponent</implementation-class>
+      </component>
   </project-components>
 
   <actions>

@@ -28,7 +28,7 @@ public class BitrixComponentManager {
 	private Project project;
 
 	BitrixComponentManager (@NotNull Project project) {
-		this.project = project;
+		this.project = BitrixUtils.getProject();
 		this.componentsList = new Hashtable<String, BitrixComponent>();
 		this.fillComponents();
 	}
@@ -79,6 +79,23 @@ public class BitrixComponentManager {
 					}
 				}
 			}
+            if (BitrixUtils.isLocalExists()) {
+                String componentsPathLocal = BitrixUtils.getLocalPath() + BitrixUtils.getEscapedSeparator() + "components";
+                VirtualFile directoryLocal = LocalFileSystem.getInstance().findFileByPath(componentsPathLocal);
+                if (directoryLocal != null && directoryLocal.isDirectory()) {
+                    VirtualFile[] nameSpaces = directoryLocal.getChildren();
+                    for (VirtualFile namespace : nameSpaces) {
+                        if (namespace.isDirectory()) {
+                            VirtualFile[] components = namespace.getChildren();
+                            for (VirtualFile component : components) {
+                                if (component.isDirectory()) {
+                                    this.componentsList.put(namespace.getName() + ":" + component.getName(), new BitrixComponent(namespace.getName(), component.getName()));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
 		} catch (NullPointerException npe) {
 			return;

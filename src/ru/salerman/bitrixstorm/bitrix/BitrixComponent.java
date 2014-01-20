@@ -134,7 +134,7 @@ public class BitrixComponent {
         String sep = BitrixSiteTemplate.sep;
         String[] templatesList = BitrixComponentTemplate.getComponentTemplatesPathOrder(this.namespace, this.name, ".default");
 
-	    if (templatesList.length == 4) {
+	    if (templatesList.length == 7) {
 		    PsiFile templateFile = BitrixUtils.getPsiFileByPath(templatesList[0]);
 			if (templateFile != null) {
 				this.insideComplexComponentTemplate = new BitrixComponentTemplate(".default", templateFile.getContainingDirectory().getVirtualFile());
@@ -206,14 +206,24 @@ public class BitrixComponent {
 
     private String[] getComponentSrcPath() {
 	    Project project = BitrixUtils.getProject();
-        String[] order = new String[2];
+        String[] order = new String[4];
         String sep = BitrixUtils.getEscapedSeparator();
         order[0]    = BitrixSiteTemplate.getInstance(project).BITRIX_ROOT
                 + sep + "components"
                 + sep + this.namespace
                 + sep + this.name
                 + sep + "component.php";
-        order[1]    = BitrixSiteTemplate.getInstance(project).BITRIX_ROOT_PATH
+        order[1]    = BitrixSiteTemplate.getInstance(project).BITRIX_ROOT
+                + sep + "components"
+                + sep + this.namespace
+                + sep + this.name
+                + sep + "class.php";
+        order[2]    = project.getBasePath() + sep + "local"
+                + sep + "components"
+                + sep + this.namespace
+                + sep + this.name
+                + sep + "component.php";
+        order[3]    = project.getBasePath() + sep + "local"
                 + sep + "components"
                 + sep + this.namespace
                 + sep + this.name

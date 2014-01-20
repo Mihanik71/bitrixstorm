@@ -100,7 +100,7 @@ public class BitrixComponentTemplate {
         int i = 0;
         VirtualFile context = BitrixUtils.getContext(project);
         if (context != null) {
-            order = new String[4];
+            order = new String[7];
 
             String path = context.getPath().replace(context.getName(), "");
             order[i++]  = path
@@ -109,7 +109,7 @@ public class BitrixComponentTemplate {
                         + sep + templateName
                         + sep + "template.php";
         } else {
-            order = new String[3];
+            order = new String[6];
         }
 
         order[i++]    = project.getBasePath()
@@ -118,6 +118,15 @@ public class BitrixComponentTemplate {
                 + sep + "components"
                 + sep + componentNameSpace
                 + sep + componentName
+                + sep + templateName
+                + sep + "template.php";
+
+        order[i++]    = project.getBasePath()
+                + sep + "local"
+                + sep + "components"
+                + sep + componentNameSpace
+                + sep + componentName
+                + sep + "templates"
                 + sep + templateName
                 + sep + "template.php";
 
@@ -135,6 +144,26 @@ public class BitrixComponentTemplate {
                 + sep + componentNameSpace
                 + sep + componentName
                 + sep + "templates"
+                + sep + templateName
+                + sep + "template.php";
+
+        order[i++]    = project.getBasePath()
+                + sep + "local"
+                + sep + "templates"
+                + sep +  ".default"
+                + sep + "components"
+                + sep + componentNameSpace
+                + sep + componentName
+                + sep + templateName
+                + sep + "template.php";
+
+        order[i++]    = project.getBasePath()
+                + sep + "local"
+                + sep + "templates"
+                + sep + BitrixSiteTemplate.getInstance(project).getName()
+                + sep + "components"
+                + sep + componentNameSpace
+                + sep + componentName
                 + sep + templateName
                 + sep + "template.php";
 

@@ -47,6 +47,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.salerman.bitrixstorm.BitrixStormProjectComponent;
 
 import javax.swing.*;
 import java.io.File;
@@ -98,8 +99,27 @@ public class BitrixUtils {
     }
 
 	public static void setProject(Project prj) {
+//        if (prj.isDisposed()) {
+//        }
 		project = prj;
 	}
+
+    public static boolean isLocalExists () {
+        if (project == null) return false;
+        try {
+            return project.getBaseDir().findChild("local").exists();
+        } catch (NullPointerException npe) {
+
+        }
+        return false;
+    }
+
+    public static String getLocalPath () {
+        if (isLocalExists() && project != null) {
+            return project.getBaseDir().findChild("local").getPath();
+        }
+        return null;
+    }
 
     public static PsiFile getIncludeFile(String path) {
 	    Project project = getProject();
