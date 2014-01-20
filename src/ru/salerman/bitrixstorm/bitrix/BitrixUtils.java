@@ -60,7 +60,7 @@ public class BitrixUtils {
         VirtualFile context = null;
         FileEditorManager manager = FileEditorManager.getInstance(project);
         VirtualFile files[] = manager.getSelectedFiles();
-        if (files != null) {
+        if (files != null && files.length == 1) {
             if (files[0].toString().contains("bitrix")) {
                 context = files[0];
             }
