@@ -50,11 +50,22 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static java.io.File.*;
 
 public class BitrixUtils {
 	private static Project project = null;
+    public static final String[] letters_rus = new String[]{
+            "а","б","в","г","д","е","ё","ж","з","и","й","к","л","м","н","о","п",
+            "р","с","т","у","ф","х","ц","ч","ш","щ","ъ","ы","ь","э","ю","я", " "
+    };
+
+    public static final String[] letters_eng = new String[]{
+            "a","b","v","g","d","e","e","zh","z","i","y","k","l","m","n","o","p",
+            "r","s","t","u","f","h","c","ch","sh","sch","","y","","e","yu","ya", "_"
+    };
 
     public static VirtualFile getContext(Project project) {
         VirtualFile context = null;
@@ -194,5 +205,27 @@ public class BitrixUtils {
         } catch (NullPointerException e) {
             return false;
         }
+    }
+
+    public static String translite (String str) {
+        SortedMap<String, String> map = new TreeMap<String,String>();
+        String[] rus = letters_rus;
+        String[] eng = letters_eng;
+        for(int i = 0; i<rus.length; i++) {
+            map.put(rus[i], eng[i]);
+        }
+        str = str.toLowerCase();
+        rus = str.split("");
+        String key = "";
+        String result = "";
+        for(int i = 0; i<rus.length; i++) {
+            key = rus[i];
+            if(map.containsKey(key)) {
+                result += map.get(key);
+            } else {
+                result += key;
+            }
+        }
+        return result;
     }
 }

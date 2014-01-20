@@ -17,6 +17,7 @@ package ru.salerman.bitrixstorm.config;
 
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -36,12 +37,23 @@ public class extractToLangFile extends AnAction {
 
         PsiFile path = BitrixUtils.getPsiFileByPath(file.getPath());
 
-        Editor editor = FileEditorManager.getInstance(e.getProject()).getSelectedTextEditor();
+        final Editor editor = FileEditorManager.getInstance(e.getProject()).getSelectedTextEditor();
 
         String selectedText = editor.getSelectionModel().getSelectedText();
 
         BitrixLangFilesManager lang = new BitrixLangFilesManager(path);
 
-        lang.set("my_key", selectedText);
+        String lang_key = BitrixUtils.translite(selectedText).toUpperCase();
+
+        lang.set(lang_key, selectedText);
+
+        final String replacer = "<?=GetMessage(\"" + lang_key + "\");?>";
+
+        ApplicationManager.getApplication().runWriteAction(new Runnable() {
+            @Override
+            public void run() {
+                editor.getDocument().replaceString(editor.getSelectionModel().getSelectionStart(), editor.getSelectionModel().getSelectionEnd(), replacer);
+            }
+        });
     }
 }

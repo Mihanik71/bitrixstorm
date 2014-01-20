@@ -4,6 +4,7 @@ import com.intellij.lang.FileASTNode;
 import com.intellij.lang.Language;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
@@ -31,6 +32,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,7 +57,13 @@ public class BitrixLangFilesManager {
     private void getLangFile () {
         this.fileName = this.psiElement.getContainingFile().getName();
         if (this.psiElement.getContainingFile().getContainingDirectory().findSubdirectory("lang") == null) {
-            this.psiElement.getContainingFile().getContainingDirectory().createSubdirectory("lang");
+            final PsiElement psiElement = this.psiElement;
+            ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                @Override
+                public void run () {
+                    psiElement.getContainingFile().getContainingDirectory().createSubdirectory("lang");
+                }
+            });
         }
         this.langDirectory = this.psiElement.getContainingFile().getContainingDirectory().findSubdirectory("lang");
     }
@@ -67,8 +76,9 @@ public class BitrixLangFilesManager {
         }
     }
 
-    private boolean prepareLangFile (String lang) {
+    private boolean prepareLangFile (final String lang) {
         if (!this.langFileExists(lang)) {
+            final PsiDirectory langDirectory = this.langDirectory;
             if (!this.langDirectory.isDirectory()) {
                 return false;
             }
@@ -76,17 +86,35 @@ public class BitrixLangFilesManager {
                 return false;
             }
             if (this.langDirectory.findSubdirectory(lang) == null) {
-                this.langDirectory.createSubdirectory(lang);
+                ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                    @Override
+                    public void run () {
+                        langDirectory.createSubdirectory(lang);
+                    }
+                });
             }
-
             if (!this.langDirectory.findSubdirectory(lang).isDirectory()) {
-                this.langDirectory.createSubdirectory(lang);
+                ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                    @Override
+                    public void run () {
+                        langDirectory.createSubdirectory(lang);
+                    }
+                });
             }
             if (!this.langDirectory.findSubdirectory(lang).isWritable()) {
                 return false;
             }
             if (this.langDirectory.findSubdirectory(lang).findFile(this.fileName) == null) {
-                this.psiFile = this.langDirectory.findSubdirectory(lang).createFile(this.fileName);
+                final String fileName = this.fileName;
+
+                ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                    @Override
+                    public void run () {
+                        langDirectory.findSubdirectory(lang).createFile(fileName);
+                    }
+                });
+
+                this.psiFile = langDirectory.findSubdirectory(lang).findFile(fileName).getOriginalFile();
             } else {
                 this.psiFile = this.langDirectory.findSubdirectory(lang).findFile(this.fileName);
                 return true;
@@ -96,19 +124,17 @@ public class BitrixLangFilesManager {
             }
             return true;
         }
-        this.psiFile = this.langDirectory.findSubdirectory(lang).createFile(this.fileName);
+        //this.psiFile = this.langDirectory.findSubdirectory(lang).createFile(this.fileName);
         return true;
     }
 
     public void set (String key, String text, String lang) {
         if (this.prepareLangFile(lang)) {
-            String mess = "$MESS[\"" + key + "\"] = \"" + text + "\";";
-
-            PhpPsiElement el = PhpPsiElementFactory.createPhpPsiFromText(this.psiElement.getProject(), TokenSet.EMPTY, mess);
-            
-            this.psiFile.add(el);
+            String mess = "\n$MESS [\"" + key + "\"]\t\t\t= \"" + text + "\";";
+            this.writeMessage(mess, lang);
         }
     }
+
 
     public void set (String key, String text) {
         this.set(key, text, this.defaultLang);
@@ -122,5 +148,27 @@ public class BitrixLangFilesManager {
         return this.get(key, this.defaultLang);
     }
 
+    public final void writeMessage (final String message, final String lang) {
+        final String langFile = this.langDirectory.findSubdirectory(lang).findFile(this.fileName).getVirtualFile().getCanonicalPath();
+        final String langFileContent = this.langDirectory.findSubdirectory(lang).findFile(this.fileName).getText();
+        ApplicationManager.getApplication().runWriteAction(new Runnable() {
+            @Override
+            public void run () {
+                try {
+                    FileWriter fstream = new FileWriter(langFile);
+                    BufferedWriter out = new BufferedWriter(fstream);
+                    String newLangText = langFileContent.length() == 0 ? "<?php" : langFileContent;
+                    out.write(newLangText);
+                    out.write(message);
+                    out.close();
+                } catch (Exception e){
+                    System.err.println("Error: " + e.getMessage());
+                }
+            }
+        });
+    }
 
+    public String getKeyName (String value) {
+        return BitrixUtils.translite(value);
+    }
 }
