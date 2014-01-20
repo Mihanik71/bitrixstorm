@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/salerman/bitrixstorm/">
   <id>ru.salerman.bitrixstorm</id>
   <name>BitrixStorm</name>
-  <version>0.2.6</version>
+  <version>0.2.7b</version>
   <vendor email="support@salerman.ru" url="http://www.salerman.ru">Salerman</vendor>
 
   <description><![CDATA[
@@ -20,6 +20,12 @@
       ]]></description>
 
   <change-notes><![CDATA[
+      <p>
+        0.2.7
+        <ul>
+            <li>Bigfixes</li>
+        </ul>
+      </p>
       <p>
         0.2.6
         <ul>
