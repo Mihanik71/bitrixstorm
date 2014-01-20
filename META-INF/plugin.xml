@@ -106,6 +106,9 @@
 	          text="Bitrix Site Template" icon="/ru/salerman/bitrixstorm/resources/icons/bitrix.png" description="Mark this directory as current bitrix site template">
 		  <add-to-group group-id="MarkRootGroup" anchor="first"/>
 	  </action>
+      <action id="extractToLangFile" class="ru.salerman.bitrixstorm.config.extractToLangFile" text="Bitrix LANG file">
+          <add-to-group group-id="RefactoringMenu" anchor="first"/>
+      </action>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
