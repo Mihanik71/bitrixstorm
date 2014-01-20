@@ -167,12 +167,12 @@ public class BitrixComponent {
         String[] pathElements = cleanString.split(":");
         if (pathElements == null) return null;
 
-	    if (pathElements.length > 0) {
+	    if (pathElements.length > 1) {
 	        String[] cmptpl = pathElements[1].split(",");
 	        if (cmptpl == null) return null;
 	        return cmptpl[0];
 	    } else {
-		    return null;
+		    return "";
 	    }
     }
 
@@ -184,7 +184,7 @@ public class BitrixComponent {
         String[] pathElements = cleanString.split(":");
         if (pathElements == null) return null;
 
-	    if (pathElements.length > 0) {
+	    if (pathElements.length > 1) {
 	        String[] cmptpl = pathElements[1].split(",");
 	        if (cmptpl == null) return null;
 
@@ -194,7 +194,7 @@ public class BitrixComponent {
 	            return "";
 	        }
 	    } else {
-		    return null;
+		    return "";
 	    }
     }
 
